@@ -1,0 +1,101 @@
+# PRUEBA AISLADA DEL INTEGRANTE 1.
+# No sustituye ni debe fusionarse con docker-compose.yml de la raiz (integrante 3).
+# Ejecutar desde la raiz: docker compose -p balanceador-lab -f balanceador/compose.test.yml up -d --build
+services:
+  balanceador:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:8080:80"
+    environment:
+      BACKEND_COUNT: "${BACKEND_COUNT:-3}"
+      BALANCER_METHOD: "${BALANCER_METHOD:-byrequests}"
+    depends_on:
+      backend1:
+        condition: service_healthy
+      backend2:
+        condition: service_healthy
+      backend3:
+        condition: service_healthy
+
+  backend1:
+    build: ./test-fixtures
+    environment:
+      BACKEND_ID: "1"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/health"]
+      interval: 3s
+      timeout: 2s
+      retries: 10
+      start_period: 3s
+
+  backend2:
+    build: ./test-fixtures
+    environment:
+      BACKEND_ID: "2"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/health"]
+      interval: 3s
+      timeout: 2s
+      retries: 10
+      start_period: 3s
+
+  backend3:
+    build: ./test-fixtures
+    environment:
+      BACKEND_ID: "3"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/health"]
+      interval: 3s
+      timeout: 2s
+      retries: 10
+      start_period: 3s
+
+  backend4:
+    profiles: ["cinco", "siete"]
+    build: ./test-fixtures
+    environment:
+      BACKEND_ID: "4"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/health"]
+      interval: 3s
+      timeout: 2s
+      retries: 10
+      start_period: 3s
+
+  backend5:
+    profiles: ["cinco", "siete"]
+    build: ./test-fixtures
+    environment:
+      BACKEND_ID: "5"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/health"]
+      interval: 3s
+      timeout: 2s
+      retries: 10
+      start_period: 3s
+
+  backend6:
+    profiles: ["siete"]
+    build: ./test-fixtures
+    environment:
+      BACKEND_ID: "6"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/health"]
+      interval: 3s
+      timeout: 2s
+      retries: 10
+      start_period: 3s
+
+  backend7:
+    profiles: ["siete"]
+    build: ./test-fixtures
+    environment:
+      BACKEND_ID: "7"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/health"]
+      interval: 3s
+      timeout: 2s
+      retries: 10
+      start_period: 3s
