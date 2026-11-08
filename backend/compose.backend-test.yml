@@ -1,0 +1,66 @@
+# PRUEBA AISLADA DEL INTEGRANTE 2.
+# Copia de balanceador/compose.test.yml usando los backends definitivos (build: ./)
+# en lugar de balanceador/test-fixtures. NO sustituye al docker-compose.yml raiz
+# (integrante 3).
+#
+# Ejecutar desde la raiz del repositorio:
+#   docker compose -p backend-lab -f backend/compose.backend-test.yml up -d --build
+#
+# Los healthchecks NO se repiten aqui: los aporta el HEALTHCHECK del Dockerfile
+# de backend/, y depends_on: service_healthy los usa igual.
+services:
+  balanceador:
+    build:
+      context: ../balanceador
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:8080:80"
+    environment:
+      BACKEND_COUNT: "${BACKEND_COUNT:-3}"
+      BALANCER_METHOD: "${BALANCER_METHOD:-byrequests}"
+    depends_on:
+      backend1:
+        condition: service_healthy
+      backend2:
+        condition: service_healthy
+      backend3:
+        condition: service_healthy
+
+  backend1:
+    build: ./
+    environment:
+      BACKEND_ID: "1"
+
+  backend2:
+    build: ./
+    environment:
+      BACKEND_ID: "2"
+
+  backend3:
+    build: ./
+    environment:
+      BACKEND_ID: "3"
+
+  backend4:
+    profiles: ["cinco", "siete"]
+    build: ./
+    environment:
+      BACKEND_ID: "4"
+
+  backend5:
+    profiles: ["cinco", "siete"]
+    build: ./
+    environment:
+      BACKEND_ID: "5"
+
+  backend6:
+    profiles: ["siete"]
+    build: ./
+    environment:
+      BACKEND_ID: "6"
+
+  backend7:
+    profiles: ["siete"]
+    build: ./
+    environment:
+      BACKEND_ID: "7"
