@@ -1,0 +1,103 @@
+name: proyecto-telematicos
+
+x-backend-environment: &backend-environment
+  PORT: "80"
+  WORK_DELAY_MS: "${WORK_DELAY_MS:-200}"
+  WORK_CPU_MS: "${WORK_CPU_MS:-0}"
+  WORK_MAX_MS: "${WORK_MAX_MS:-10000}"
+
+x-backend-common: &backend-common
+  build:
+    context: ./backend
+    dockerfile: Dockerfile
+  restart: unless-stopped
+  networks:
+    - red-proyecto
+
+services:
+  balanceador:
+    build:
+      context: ./balanceador
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${BALANCER_PORT:-8080}:80"
+    environment:
+      BACKEND_COUNT: "${BACKEND_COUNT:-3}"
+      BALANCER_METHOD: "${BALANCER_METHOD:-byrequests}"
+    depends_on:
+      backend1:
+        condition: service_healthy
+      backend2:
+        condition: service_healthy
+      backend3:
+        condition: service_healthy
+    networks:
+      - red-proyecto
+
+  backend1:
+    <<: *backend-common
+    environment:
+      <<: *backend-environment
+      BACKEND_ID: "1"
+
+  backend2:
+    <<: *backend-common
+    environment:
+      <<: *backend-environment
+      BACKEND_ID: "2"
+
+  backend3:
+    <<: *backend-common
+    environment:
+      <<: *backend-environment
+      BACKEND_ID: "3"
+
+  backend4:
+    <<: *backend-common
+    profiles: ["cinco", "siete"]
+    environment:
+      <<: *backend-environment
+      BACKEND_ID: "4"
+
+  backend5:
+    <<: *backend-common
+    profiles: ["cinco", "siete"]
+    environment:
+      <<: *backend-environment
+      BACKEND_ID: "5"
+
+  backend6:
+    <<: *backend-common
+    profiles: ["siete"]
+    environment:
+      <<: *backend-environment
+      BACKEND_ID: "6"
+
+  backend7:
+    <<: *backend-common
+    profiles: ["siete"]
+    environment:
+      <<: *backend-environment
+      BACKEND_ID: "7"
+
+  artillery:
+    image: "${ARTILLERY_IMAGE:-artilleryio/artillery:latest}"
+    profiles: ["artillery"]
+    command:
+      - run
+      - /tests/artillery-smoke.yml
+      - --output
+      - /results/artillery-report.json
+    depends_on:
+      balanceador:
+        condition: service_started
+    networks:
+      - red-proyecto
+    volumes:
+      - ./pruebas/artillery-smoke.yml:/tests/artillery-smoke.yml:ro
+      - ./pruebas/resultados:/results
+
+networks:
+  red-proyecto:
+    driver: bridge
