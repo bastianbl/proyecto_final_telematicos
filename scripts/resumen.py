@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Convierte los JSON de Artillery de pruebas/resultados/ en resumen.csv (para el integrante 5).
+"""Convierte los JSON de Artillery de pruebas/resultados/ en resumen.csv (para el integrante 5; separador ";" y coma decimal, para abrir directo en Excel en español).
 Ejecutar desde la raíz del repo:  python scripts/resumen.py"""
 import csv, glob, json, os, re
 
@@ -16,7 +16,7 @@ for f in sorted(glob.glob(os.path.join(DIR, "*.json"))):
     total = c.get("http.requests", 0)
     ok = c.get("http.codes.200", 0)
     err = total - ok
-    reparto = {k.split(".", 1)[1]: v for k, v in c.items() if k.startswith("backend.")}
+    reparto = " ".join(f"{k.split('.', 1)[1]}={v}" for k, v in sorted(c.items()) if k.startswith("backend."))
     filas.append({
         "algoritmo": algo, "backends": nb, "carga": carga, "ejecucion": ts,
         "peticiones": total, "http_200": ok, "errores": err,
@@ -26,12 +26,17 @@ for f in sorted(glob.glob(os.path.join(DIR, "*.json"))):
         "lat_min_ms": rt.get("min", ""), "lat_media_ms": rt.get("mean", ""),
         "lat_p50_ms": rt.get("median", ""), "lat_p95_ms": rt.get("p95", ""),
         "lat_p99_ms": rt.get("p99", ""), "lat_max_ms": rt.get("max", ""),
-        "reparto_backends": json.dumps(reparto, sort_keys=True),
+        "reparto_backends": reparto,
     })
 
+def coma(v):
+    # Excel en español espera coma decimal (202,4) y separador de columnas ";"
+    return str(v).replace(".", ",") if isinstance(v, float) else v
+
 if filas:
-    with open(os.path.join(DIR, "resumen.csv"), "w", newline="", encoding="utf-8") as out:
-        w = csv.DictWriter(out, fieldnames=filas[0].keys())
+    filas = [{k: coma(v) for k, v in fila.items()} for fila in filas]
+    with open(os.path.join(DIR, "resumen.csv"), "w", newline="", encoding="utf-8-sig") as out:
+        w = csv.DictWriter(out, fieldnames=filas[0].keys(), delimiter=";")
         w.writeheader(); w.writerows(filas)
     print(f"resumen.csv generado con {len(filas)} ejecuciones")
 else:

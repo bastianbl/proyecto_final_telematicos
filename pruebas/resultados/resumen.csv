@@ -1,0 +1,5 @@
+﻿algoritmo;backends;carga;ejecucion;peticiones;http_200;errores;tasa_error_%;vusers_fallidos;rps_medio;lat_min_ms;lat_media_ms;lat_p50_ms;lat_p95_ms;lat_p99_ms;lat_max_ms;reparto_backends
+byrequests;3;1000u;20261110_154748;3000;3000;0;0,0;0;98;165;202,3;202,4;206,5;214,9;265;backend1=1000 backend2=1000 backend3=1000
+byrequests;3;100u;20261110_154534;300;300;0;0,0;0;10;183;204,5;202,4;210,6;232,8;372;backend1=100 backend2=100 backend3=100
+byrequests;3;500u;20261110_154642;1500;1500;0;0,0;0;49;180;203,7;202,4;206,5;237,5;498;backend1=500 backend2=500 backend3=500
+byrequests;3;50u;20261110_154425;150;150;0;0,0;0;5;178;207,1;202,4;214,9;232,8;411;backend1=50 backend2=50 backend3=50
