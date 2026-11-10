@@ -55,11 +55,18 @@ foreach ($entorno in $lista) {
         Write-Host "(apunta las horas exactas de cada acción para el informe)" -ForegroundColor Yellow
     }
 
-    $args = @('compose', '-f', $composeFile) + $perfil + @(
+    $dockerArgs = @('compose', '-f', $composeFile) + $perfil + @(
         '--profile', 'artillery', 'run', '--rm', '--no-deps', 'artillery',
         'run', '-e', $entorno, '/tests/carga.yml', '--output', "/results/$base.json")
-    & docker @args 2>&1 | Tee-Object -FilePath (Join-Path $resultados "$base.txt")
-    if ($LASTEXITCODE -ne 0) { throw "Artillery falló en $entorno (código $LASTEXITCODE)" }
+
+    # Los avisos que Node escribe por stderr (p. ej. TimeoutNaNWarning) no son errores:
+    # se desactiva "Stop" solo durante esta llamada y se revisa el código de salida real.
+    $previo = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    & docker @dockerArgs 2>&1 | ForEach-Object { "$_" } | Tee-Object -FilePath (Join-Path $resultados "$base.txt")
+    $codigo = $LASTEXITCODE
+    $ErrorActionPreference = $previo
+    if ($codigo -ne 0) { throw "Artillery falló en $entorno (código $codigo)" }
 
     if ($entorno -ne $lista[-1]) { Start-Sleep -Seconds $PausaSegundos }
 }
