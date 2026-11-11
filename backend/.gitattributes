@@ -1,0 +1,5 @@
+# Evita conversiones CRLF si alguien del equipo trabaja en Windows.
+*.py text eol=lf
+*.sh text eol=lf
+Dockerfile text eol=lf
+*.yml text eol=lf

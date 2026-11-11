@@ -1,0 +1,34 @@
+# Escenario único de Artillery para TODAS las pruebas (misma carga => comparación justa).
+# El algoritmo (byrequests | bybusyness) y el número de backends (3 | 5 | 7) NO se cambian
+# aquí: se cambian en el balanceador con scripts/compose.ps1 (ver scripts/correr_pruebas.ps1).
+#
+# Dentro de Docker el target es http://balanceador (red-proyecto, puerto 80).
+# "N usuarios" = N usuarios virtuales que llegan repartidos en 30 s; cada uno hace
+# 3 peticiones a /work (200 ms de trabajo simulado en el backend) con 0.5 s entre ellas.
+config:
+  target: "http://balanceador"
+  processor: "./procesador.js"
+  http:
+    timeout: 10
+  environments:
+    carga50:   { phases: [ { duration: 30, arrivalCount: 50,   name: "50 usuarios" } ] }
+    carga100:  { phases: [ { duration: 30, arrivalCount: 100,  name: "100 usuarios" } ] }
+    carga500:  { phases: [ { duration: 30, arrivalCount: 500,  name: "500 usuarios" } ] }
+    carga1000: { phases: [ { duration: 30, arrivalCount: 1000, name: "1000 usuarios" } ] }
+    # Prueba de caída y recuperación: carga constante y larga para detener/arrancar un backend en medio.
+    caida:     { phases: [ { duration: 120, arrivalRate: 20, name: "carga constante 120 s" } ] }
+
+scenarios:
+  - name: "Trabajo a traves del balanceador"
+    flow:
+      - get:
+          url: "/work"
+          afterResponse: "contarBackend"
+      - think: 0.5
+      - get:
+          url: "/work"
+          afterResponse: "contarBackend"
+      - think: 0.5
+      - get:
+          url: "/work"
+          afterResponse: "contarBackend"

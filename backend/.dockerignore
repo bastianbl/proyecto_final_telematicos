@@ -1,0 +1,4 @@
+# Solo app.py y healthcheck.py entran en la imagen.
+*
+!app.py
+!healthcheck.py

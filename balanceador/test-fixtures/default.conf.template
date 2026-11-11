@@ -1,0 +1,17 @@
+# Nginx oficial sustituye BACKEND_ID al arrancar el contenedor.
+server {
+    listen 80;
+    server_name _;
+
+    location = /health {
+        default_type text/plain;
+        add_header X-Backend-ID "${BACKEND_ID}" always;
+        return 200 "ok backend${BACKEND_ID}\n";
+    }
+
+    location / {
+        default_type text/plain;
+        add_header X-Backend-ID "${BACKEND_ID}" always;
+        return 200 "backend${BACKEND_ID}\n";
+    }
+}
