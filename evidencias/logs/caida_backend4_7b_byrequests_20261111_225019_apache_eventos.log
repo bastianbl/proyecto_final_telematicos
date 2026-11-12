@@ -1,0 +1,15 @@
+﻿balanceador-1  | [Thu Nov 12 03:50:37.714299 2026] [proxy:error] [pid 11:tid 80] (70007)The timeout specified has expired: AH00957: http: attempt to connect to 172.19.0.7:80 (backend4:80) failed
+balanceador-1  | [Thu Nov 12 03:50:38.188022 2026] [proxy:error] [pid 8:tid 38] (70007)The timeout specified has expired: AH00957: HCOH: attempt to connect to 172.19.0.7:80 (backend4:80) failed
+balanceador-1  | [Thu Nov 12 03:50:45.716029 2026] [proxy:error] [pid 11:tid 80] AH00959: ap_proxy_connect_backend disabling worker for (backend4:80) for 2s
+balanceador-1  | [Thu Nov 12 03:50:45.716070 2026] [proxy_http:error] [pid 11:tid 80] [client 172.19.0.1:59676] AH01114: HTTP: failed to make connection to backend: backend4
+balanceador-1  | [Thu Nov 12 03:50:49.439034 2026] [proxy:error] [pid 9:tid 42] (EAI 3)Temporary failure in name resolution: [client 172.19.0.1:34366] AH00898: DNS lookup failure for: backend4 returned by /
+balanceador-1  | 172.19.0.1 - - [12/Nov/2026:03:50:41 +0000] "GET / HTTP/1.1" 500 300
+balanceador-1  | [Thu Nov 12 03:50:50.206817 2026] [proxy:error] [pid 8:tid 55] (70007)The timeout specified has expired: AH00957: HCOH: attempt to connect to 172.19.0.7:80 (backend4:80) failed
+balanceador-1  | [Thu Nov 12 03:50:56.337329 2026] [proxy:error] [pid 11:tid 100] (70007)The timeout specified has expired: AH00957: http: attempt to connect to 172.19.0.7:80 (backend4:80) failed
+balanceador-1  | [Thu Nov 12 03:50:56.665934 2026] [proxy:error] [pid 117:tid 140] (EAI 3)Temporary failure in name resolution: [client 172.19.0.1:33970] AH00898: DNS lookup failure for: backend4 returned by /
+balanceador-1  | 172.19.0.1 - - [12/Nov/2026:03:50:48 +0000] "GET / HTTP/1.1" 500 300
+balanceador-1  | [Thu Nov 12 03:51:00.005344 2026] [proxy:error] [pid 117:tid 122] (111)Connection refused: AH00957: http: attempt to connect to 172.19.0.7:80 (backend4:80) failed
+balanceador-1  | [Thu Nov 12 03:51:00.005710 2026] [proxy:error] [pid 117:tid 122] AH00959: ap_proxy_connect_backend disabling worker for (backend4:80) for 2s
+balanceador-1  | [Thu Nov 12 03:51:00.005746 2026] [proxy_http:error] [pid 117:tid 122] [client 172.19.0.1:56754] AH01114: HTTP: failed to make connection to backend: backend4
+balanceador-1  | [Thu Nov 12 03:51:00.339193 2026] [proxy:error] [pid 11:tid 100] AH00959: ap_proxy_connect_backend disabling worker for (backend4:80) for 2s
+balanceador-1  | [Thu Nov 12 03:51:00.339226 2026] [proxy_http:error] [pid 11:tid 100] [client 172.19.0.1:33976] AH01114: HTTP: failed to make connection to backend: backend4

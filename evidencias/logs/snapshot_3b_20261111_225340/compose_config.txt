@@ -1,0 +1,83 @@
+﻿name: proyecto-telematicos
+services:
+  backend1:
+    build:
+      context: C:\Users\Usuario\Documents\GitHub\proyecto_final_telematicos\backend
+      dockerfile: Dockerfile
+    environment:
+      BACKEND_ID: "1"
+      PORT: "80"
+      WORK_CPU_MS: "0"
+      WORK_DELAY_MS: "200"
+      WORK_MAX_MS: "10000"
+    networks:
+      red-proyecto: null
+    restart: unless-stopped
+  backend2:
+    build:
+      context: C:\Users\Usuario\Documents\GitHub\proyecto_final_telematicos\backend
+      dockerfile: Dockerfile
+    environment:
+      BACKEND_ID: "2"
+      PORT: "80"
+      WORK_CPU_MS: "0"
+      WORK_DELAY_MS: "200"
+      WORK_MAX_MS: "10000"
+    networks:
+      red-proyecto: null
+    restart: unless-stopped
+  backend3:
+    build:
+      context: C:\Users\Usuario\Documents\GitHub\proyecto_final_telematicos\backend
+      dockerfile: Dockerfile
+    environment:
+      BACKEND_ID: "3"
+      PORT: "80"
+      WORK_CPU_MS: "0"
+      WORK_DELAY_MS: "200"
+      WORK_MAX_MS: "10000"
+    networks:
+      red-proyecto: null
+    restart: unless-stopped
+  balanceador:
+    build:
+      context: C:\Users\Usuario\Documents\GitHub\proyecto_final_telematicos\balanceador
+      dockerfile: Dockerfile
+    depends_on:
+      backend1:
+        condition: service_healthy
+        required: true
+      backend2:
+        condition: service_healthy
+        required: true
+      backend3:
+        condition: service_healthy
+        required: true
+    environment:
+      BACKEND_COUNT: "3"
+      BALANCER_METHOD: byrequests
+    networks:
+      red-proyecto: null
+    ports:
+      - mode: ingress
+        host_ip: 127.0.0.1
+        target: 80
+        published: "8080"
+        protocol: tcp
+    restart: unless-stopped
+networks:
+  red-proyecto:
+    name: proyecto-telematicos_red-proyecto
+    driver: bridge
+x-backend-common:
+  build:
+    context: ./backend
+    dockerfile: Dockerfile
+  networks:
+    - red-proyecto
+  restart: unless-stopped
+x-backend-environment:
+  PORT: "80"
+  WORK_CPU_MS: "0"
+  WORK_DELAY_MS: "200"
+  WORK_MAX_MS: "10000"

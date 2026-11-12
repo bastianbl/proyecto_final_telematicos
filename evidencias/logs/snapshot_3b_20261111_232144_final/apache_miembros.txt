@@ -1,0 +1,4 @@
+﻿    BalancerMember "http://backend1:80" retry=2 connectiontimeout=2 timeout=10 hcmethod=GET hcuri=/health hcinterval=2 hcfails=1 hcpasses=1
+    BalancerMember "http://backend2:80" retry=2 connectiontimeout=2 timeout=10 hcmethod=GET hcuri=/health hcinterval=2 hcfails=1 hcpasses=1
+    BalancerMember "http://backend3:80" retry=2 connectiontimeout=2 timeout=10 hcmethod=GET hcuri=/health hcinterval=2 hcfails=1 hcpasses=1
+    ProxySet lbmethod=byrequests

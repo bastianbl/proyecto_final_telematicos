@@ -1,0 +1,36 @@
+﻿=== Prueba de caída y recuperación  2026-11-11 23:14:51 ===
+Backends: 3 | Método: byrequests | Backend a detener: backend2 | Ruta: /
+Duración: 70s | Parada en t=10s | Inicio en t=45s | Intervalo: 100 ms
+
+Reparto inicial (30 peticiones): backend1=10, backend2=10, backend3=10
+
+--- Tráfico continuo ---
+[t=  10.0s 23:15:02.289] >>> ORDEN: docker compose stop backend2
+[t=  45.0s 23:15:37.263] >>> ORDEN: docker compose start backend2
+
+--- Resultados ---
+Peticiones: 534 | Correctas: 532 | Con error: 2 | Éxito: 99.63 %
+Latencia (peticiones correctas): media 2.4 ms | máxima 45.8 ms
+  Antes de la caída      90 peticiones | backend1=30, backend2=30, backend3=30
+  Backend caído         222 peticiones | backend1=109, backend2=1, backend3=110, ERROR=2
+  Tras iniciarlo        222 peticiones | backend1=80, backend2=63, backend3=79
+
+Errores: 2 (HTTP 0=2). Primero a t=10.5s (0.4s tras la orden de parada); último a t=15.7s (5.7s tras la orden).
+  (Estado 0 = sin respuesta/tiempo agotado; 5xx = error devuelto por Apache, p. ej. AH00898 al no resolver el backend caído)
+Última respuesta de backend2 tras la orden de parada: t=69.7s (59.7s después).
+backend2 vuelve a recibir tráfico a t=48.8s: 3.8s después de la orden de arranque (sin reiniciar Apache).
+
+Reparto final (30 peticiones): backend1=10, backend2=10, backend3=10
+Comprobación final: los backends participan en el balanceo sin errores.
+
+Eventos de Apache durante la prueba (errores/avisos): 8 líneas
+  balanceador-1  | [Thu Nov 12 04:15:04.683268 2026] [proxy:error] [pid 8:tid 13] (70007)The timeout specified has expired: AH00957: HCOH: attempt to connect to 172.19.0.4:80 (backend2:80) failed
+  balanceador-1  | [Thu Nov 12 04:15:04.741087 2026] [proxy:error] [pid 11:tid 25] (70007)The timeout specified has expired: AH00957: http: attempt to connect to 172.19.0.4:80 (backend2:80) failed
+  balanceador-1  | [Thu Nov 12 04:15:12.741230 2026] [proxy_http:error] [pid 11:tid 25] [client 172.19.0.1:55274] AH01114: HTTP: failed to make connection to backend: backend2
+  balanceador-1  | [Thu Nov 12 04:15:15.996344 2026] [proxy:error] [pid 9:tid 28] (EAI 3)Temporary failure in name resolution: [client 172.19.0.1:43146] AH00898: DNS lookup failure for: backend2 returned by /
+  balanceador-1  | 172.19.0.1 - - [12/Nov/2026:04:15:07 +0000] "GET / HTTP/1.1" 500 300
+  balanceador-1  | [Thu Nov 12 04:15:16.701226 2026] [proxy:error] [pid 8:tid 74] (70007)The timeout specified has expired: AH00957: HCOH: attempt to connect to 172.19.0.4:80 (backend2:80) failed
+  balanceador-1  | [Thu Nov 12 04:15:28.721861 2026] [proxy:error] [pid 8:tid 13] (70007)The timeout specified has expired: AH00957: HCOH: attempt to connect to 172.19.0.4:80 (backend2:80) failed
+  balanceador-1  | [Thu Nov 12 04:15:38.740220 2026] [proxy:error] [pid 8:tid 74] (111)Connection refused: AH00957: HCOH: attempt to connect to 172.19.0.4:80 (backend2:80) failed
+
+Órdenes: parada 23:15:02.289 (t=10.0s) | arranque 23:15:37.263 (t=45.0s)

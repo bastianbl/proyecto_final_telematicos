@@ -1,0 +1,41 @@
+﻿=== Verificación del sistema  2026-11-11 22:43:51 ===
+Escenario esperado: 3 backends | URL: http://127.0.0.1:8080
+
+--- 1. Docker ---
+[ OK  ] Docker responde (28.5.1)
+[ OK  ] docker compose config es válido 
+
+--- 2. Contenedores ---
+[ OK  ] Contenedor balanceador (running|sin-healthcheck)
+[ OK  ] Contenedor backend1 (running|healthy)
+[ OK  ] Contenedor backend2 (running|healthy)
+[ OK  ] Contenedor backend3 (running|healthy)
+
+--- 3. Configuración de Apache ---
+[ OK  ] httpd -t (Syntax OK)
+[ OK  ] Módulo proxy_module 
+[ OK  ] Módulo proxy_http_module 
+[ OK  ] Módulo proxy_balancer_module 
+[ OK  ] Módulo proxy_hcheck_module 
+[ OK  ] Módulo lbmethod_byrequests_module 
+[ OK  ] Módulo lbmethod_bybusyness_module 
+[ OK  ] Pool de Apache coincide con BACKEND_COUNT (3 miembros, esperados 3)
+[ OK  ] Monitoreo activo (hcheck) en todos los miembros 
+       Método de balanceo activo: byrequests
+
+--- 4. Endpoints a través del balanceador ---
+[ OK  ] GET /health (HTTP 200, 'ok backend3')
+[ OK  ] GET / identifica al backend ('backend1')
+[ OK  ] GET /work ('backend2', 203.4 ms)
+
+--- 5. Reparto de 30 solicitudes secuenciales ---
+       backend1=10, backend2=10, backend3=10
+[ OK  ] Todos los backends reciben tráfico 
+[ OK  ] Sin errores ni respuestas inesperadas 
+       Mín/Máx por backend: 10 / 10 (informativo; es una prueba funcional, no de rendimiento)
+
+--- 6. Endpoints administrativos no expuestos ---
+[ OK  ] Acceso restringido a /balancer-manager (HTTP 403; se espera 403)
+[ OK  ] Acceso restringido a /server-status (HTTP 403; se espera 403)
+
+RESULTADO: todas las verificaciones pasaron.

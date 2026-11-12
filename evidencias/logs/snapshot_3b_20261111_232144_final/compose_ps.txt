@@ -1,0 +1,9 @@
+﻿NAME                                 IMAGE                              COMMAND                  SERVICE       CREATED              STATUS                        PORTS
+proyecto-telematicos-backend1-1      proyecto-telematicos-backend1      "python /app/app.py"     backend1      About a minute ago   Up About a minute (healthy)   80/tcp
+proyecto-telematicos-backend2-1      proyecto-telematicos-backend2      "python /app/app.py"     backend2      About a minute ago   Up About a minute (healthy)   80/tcp
+proyecto-telematicos-backend3-1      proyecto-telematicos-backend3      "python /app/app.py"     backend3      About a minute ago   Up About a minute (healthy)   80/tcp
+proyecto-telematicos-backend4-1      proyecto-telematicos-backend4      "python /app/app.py"     backend4      4 minutes ago        Up 2 minutes (healthy)        80/tcp
+proyecto-telematicos-backend5-1      proyecto-telematicos-backend5      "python /app/app.py"     backend5      4 minutes ago        Up 4 minutes (healthy)        80/tcp
+proyecto-telematicos-backend6-1      proyecto-telematicos-backend6      "python /app/app.py"     backend6      4 minutes ago        Up 4 minutes (healthy)        80/tcp
+proyecto-telematicos-backend7-1      proyecto-telematicos-backend7      "python /app/app.py"     backend7      4 minutes ago        Up 4 minutes (healthy)        80/tcp
+proyecto-telematicos-balanceador-1   proyecto-telematicos-balanceador   "/usr/local/bin/balaÔÇª"   balanceador   About a minute ago   Up About a minute             127.0.0.1:8080->80/tcp

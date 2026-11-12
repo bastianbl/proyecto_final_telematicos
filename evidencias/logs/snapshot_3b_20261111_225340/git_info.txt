@@ -1,0 +1,11 @@
+﻿Rama:    feature/parte6-monitoreo-documentacion
+Commit:  58ca4e3 metricas: README y analisis
+Estado:
+  ?? "README (5).md"
+  ?? README.md
+  ?? evidencias/
+  ?? pruebas/resultados/artillery-report.json
+  ?? scripts/comun.ps1
+  ?? scripts/prueba_caida.ps1
+  ?? scripts/recolectar_evidencias.ps1
+  ?? scripts/verificar.ps1
