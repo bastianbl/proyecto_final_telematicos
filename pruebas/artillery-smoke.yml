@@ -1,0 +1,12 @@
+config:
+  target: http://balanceador
+  phases:
+    - duration: 10
+      arrivalRate: 1
+      name: Comprobación de integración
+
+scenarios:
+  - name: Solicitud de trabajo a través del balanceador
+    flow:
+      - get:
+          url: /work
