@@ -140,12 +140,12 @@ proyecto_final_telematicos/
 
 | Integrante | Nombre | Área |
 |---|---|---|
-| 1 | _(por completar)_ | Balanceador Apache |
-| 2 | _(por completar)_ | Backends y Docker |
-| 3 | _(por completar)_ | Docker Compose e integración |
-| 4 | _(por completar)_ | Pruebas Artillery |
-| 5 | _(por completar)_ | Métricas y análisis |
-| 6 | _(por completar)_ | Monitoreo, README, evidencias y entrega |
+| 1 | _Sebastian Bustamante López_ | Balanceador Apache |
+| 2 | _Jose Alejandro Ramírez_ | Backends y Docker |
+| 3 | _Byron Zapata_ | Docker Compose e integración |
+| 4 | _Diego Alejandro Hernández_ | Pruebas Artillery |
+| 5 | _Kevin Franco_ | Métricas y análisis |
+| 6 | _Santiago López_ | Monitoreo, README, evidencias y entrega |
 
 ## Limitaciones conocidas
 
