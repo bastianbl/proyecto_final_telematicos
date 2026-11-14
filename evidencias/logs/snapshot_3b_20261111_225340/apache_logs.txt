@@ -1,0 +1,14 @@
+﻿balanceador-1  | [balanceador] Backends=3, metodo=byrequests
+balanceador-1  | Syntax OK
+balanceador-1  | [Thu Nov 12 03:52:03.857284 2026] [mpm_event:notice] [pid 1:tid 1] AH00489: Apache/2.4.69 (Unix) configured -- resuming normal operations
+balanceador-1  | [Thu Nov 12 03:52:03.857436 2026] [core:notice] [pid 1:tid 1] AH00094: Command line: 'httpd -D FOREGROUND'
+balanceador-1  | 172.19.0.10 - - [12/Nov/2026:03:52:53 +0000] "GET /work HTTP/1.1" 200 9
+balanceador-1  | 172.19.0.10 - - [12/Nov/2026:03:52:54 +0000] "GET /work HTTP/1.1" 200 9
+balanceador-1  | 172.19.0.10 - - [12/Nov/2026:03:52:55 +0000] "GET /work HTTP/1.1" 200 9
+balanceador-1  | 172.19.0.10 - - [12/Nov/2026:03:52:56 +0000] "GET /work HTTP/1.1" 200 9
+balanceador-1  | 172.19.0.10 - - [12/Nov/2026:03:52:57 +0000] "GET /work HTTP/1.1" 200 9
+balanceador-1  | 172.19.0.10 - - [12/Nov/2026:03:52:58 +0000] "GET /work HTTP/1.1" 200 9
+balanceador-1  | 172.19.0.10 - - [12/Nov/2026:03:52:59 +0000] "GET /work HTTP/1.1" 200 9
+balanceador-1  | 172.19.0.10 - - [12/Nov/2026:03:53:00 +0000] "GET /work HTTP/1.1" 200 9
+balanceador-1  | 172.19.0.10 - - [12/Nov/2026:03:53:01 +0000] "GET /work HTTP/1.1" 200 9
+balanceador-1  | 172.19.0.10 - - [12/Nov/2026:03:53:02 +0000] "GET /work HTTP/1.1" 200 9

@@ -1,0 +1,9 @@
+﻿NAME                                 CPU %     MEM USAGE / LIMIT     NET I/O
+proyecto-telematicos-balanceador-1   0.21%     9.512MiB / 6.719GiB   102kB / 87.6kB
+proyecto-telematicos-backend1-1      0.13%     12.27MiB / 6.719GiB   28.7kB / 31.4kB
+proyecto-telematicos-backend3-1      0.09%     11.68MiB / 6.719GiB   28.4kB / 31kB
+proyecto-telematicos-backend2-1      0.01%     12.75MiB / 6.719GiB   27.8kB / 30.6kB
+proyecto-telematicos-backend4-1      0.01%     11.57MiB / 6.719GiB   35.5kB / 28.8kB
+proyecto-telematicos-backend7-1      27.34%    11.98MiB / 6.719GiB   75.7kB / 64.7kB
+proyecto-telematicos-backend6-1      18.29%    18.82MiB / 6.719GiB   76.2kB / 64.2kB
+proyecto-telematicos-backend5-1      25.40%    11.54MiB / 6.719GiB   76kB / 64.8kB

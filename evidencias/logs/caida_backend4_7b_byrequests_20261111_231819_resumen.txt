@@ -1,0 +1,39 @@
+﻿=== Prueba de caída y recuperación  2026-11-11 23:18:20 ===
+Backends: 7 | Método: byrequests | Backend a detener: backend4 | Ruta: /
+Duración: 70s | Parada en t=10s | Inicio en t=45s | Intervalo: 100 ms
+
+Reparto inicial (70 peticiones): backend1=10, backend2=10, backend3=10, backend4=10, backend5=10, backend6=10, backend7=10
+
+--- Tráfico continuo ---
+[t=  10.0s 23:18:30.656] >>> ORDEN: docker compose stop backend4
+[t=  46.5s 23:19:07.122] >>> ORDEN: docker compose start backend4
+
+--- Resultados ---
+Peticiones: 358 | Correctas: 352 | Con error: 6 | Éxito: 98.32 %
+Latencia (peticiones correctas): media 5.1 ms | máxima 1,008.2 ms
+  Antes de la caída      91 peticiones | backend1=13, backend2=13, backend3=13, backend4=13, backend5=13, backend6=13, backend7=13
+  Backend caído          63 peticiones | backend1=9, backend2=10, backend3=10, backend5=8, backend6=10, backend7=10, ERROR=6
+  Tras iniciarlo        204 peticiones | backend1=30, backend2=30, backend3=30, backend4=25, backend5=29, backend6=30, backend7=30
+
+Errores: 6 (HTTP 0=6). Primero a t=10.4s (0.4s tras la orden de parada); último a t=41.5s (31.5s tras la orden).
+  (Estado 0 = sin respuesta/tiempo agotado; 5xx = error devuelto por Apache, p. ej. AH00898 al no resolver el backend caído)
+Última respuesta de backend4 tras la orden de parada: t=69.3s (59.3s después).
+backend4 vuelve a recibir tráfico a t=50.6s: 4.1s después de la orden de arranque (sin reiniciar Apache).
+
+Reparto final (70 peticiones): backend1=10, backend2=10, backend3=10, backend4=10, backend5=10, backend6=10, backend7=10
+Comprobación final: los backends participan en el balanceo sin errores.
+
+Eventos de Apache durante la prueba (errores/avisos): 19 líneas
+  balanceador-1  | [Thu Nov 12 04:18:33.012676 2026] [proxy:error] [pid 12:tid 69] (70007)The timeout specified has expired: AH00957: http: attempt to connect to 172.19.0.8:80 (backend4:80) failed
+  balanceador-1  | [Thu Nov 12 04:18:34.484821 2026] [proxy:error] [pid 8:tid 40] (70007)The timeout specified has expired: AH00957: HCOH: attempt to connect to 172.19.0.8:80 (backend4:80) failed
+  balanceador-1  | [Thu Nov 12 04:18:41.013276 2026] [proxy:error] [pid 12:tid 69] AH00959: ap_proxy_connect_backend disabling worker for (backend4:80) for 2s
+  balanceador-1  | [Thu Nov 12 04:18:41.013315 2026] [proxy_http:error] [pid 12:tid 69] [client 172.19.0.1:59508] AH01114: HTTP: failed to make connection to backend: backend4
+  balanceador-1  | [Thu Nov 12 04:18:44.680543 2026] [proxy:error] [pid 117:tid 126] (EAI 3)Temporary failure in name resolution: [client 172.19.0.1:50858] AH00898: DNS lookup failure for: backend4 returned by /
+  balanceador-1  | 172.19.0.1 - - [12/Nov/2026:04:18:36 +0000] "GET / HTTP/1.1" 500 300
+  balanceador-1  | [Thu Nov 12 04:18:45.879776 2026] [proxy:error] [pid 12:tid 59] (70007)The timeout specified has expired: AH00957: http: attempt to connect to 172.19.0.8:80 (backend4:80) failed
+  balanceador-1  | [Thu Nov 12 04:18:46.502974 2026] [proxy:error] [pid 8:tid 14] (70007)The timeout specified has expired: AH00957: HCOH: attempt to connect to 172.19.0.8:80 (backend4:80) failed
+  balanceador-1  | [Thu Nov 12 04:18:53.881791 2026] [proxy:error] [pid 12:tid 59] AH00959: ap_proxy_connect_backend disabling worker for (backend4:80) for 2s
+  balanceador-1  | [Thu Nov 12 04:18:53.881851 2026] [proxy_http:error] [pid 12:tid 59] [client 172.19.0.1:50864] AH01114: HTTP: failed to make connection to backend: backend4
+  ... (ver caida_backend4_7b_byrequests_20261111_231819_apache_eventos.log)
+
+Órdenes: parada 23:18:30.656 (t=10.0s) | arranque 23:19:07.122 (t=46.5s)
