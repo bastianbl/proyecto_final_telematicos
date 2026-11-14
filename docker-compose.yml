@@ -95,7 +95,7 @@ services:
     networks:
       - red-proyecto
     volumes:
-      - ./pruebas/artillery-smoke.yml:/tests/artillery-smoke.yml:ro
+      - ./pruebas:/tests:ro
       - ./pruebas/resultados:/results
 
 networks:
