@@ -8,6 +8,18 @@ Servidor HTTP mínimo en Python (solo la biblioteca estándar) que cumple
 | `GET /` | `200`, texto plano `backendN` | Identificar qué servidor atendió la petición |
 | `GET /health` | `200`, `ok backendN` | `mod_proxy_hcheck` de Apache y `HEALTHCHECK` de Docker |
 | `GET /work` | `200`, `backendN` después de simular carga | Pruebas de Artillery (`byrequests` vs `bybusyness`) |
+| `GET /info` | `200`, JSON | Identidad: hostname (ID del contenedor), IP, uptime, configuración de `/work` |
+| `GET /metrics` | `200`, JSON | Peticiones por ruta y por código, activas ahora, pico de activas, tiempo medio y máximo de `/work` |
+
+Los tres primeros conservan el formato exacto del contrato porque
+`scripts/verificar.ps1` y `pruebas/procesador.js` dependen de él. `/info` y
+`/metrics` son endpoints añadidos; los usa la [interfaz gráfica](../interfaz/README.md).
+
+En `/metrics`, `active` y `peak_active` solo cuentan el tráfico de aplicación
+(`/` y `/work`). Las consultas de monitoreo (`/health`, `/info`, `/metrics`) no
+suman, para que observar no altere lo observado. Los contadores viven en memoria
+y se reinician si el contenedor se reinicia. Cualquier ruta desconocida se agrupa
+como `otros`, así una URL inventada no puede crear claves sin límite.
 
 - Puerto interno **80**. Los servicios se llaman `backend1` … `backend7`.
 - Imagen base fijada: `python:3.12.7-alpine3.20`, sin dependencias externas.
@@ -40,6 +52,8 @@ docker run --rm -d --name b1 -e BACKEND_ID=1 -p 127.0.0.1:8081:80 backend-telema
 curl localhost:8081/          # backend1
 curl localhost:8081/health    # ok backend1
 time curl localhost:8081/work # backend1 (~0,2 s)
+curl localhost:8081/info      # JSON con hostname, IP, uptime…
+curl localhost:8081/metrics   # JSON con contadores
 docker inspect -f '{{.State.Health.Status}}' b1   # healthy
 docker stop b1
 ```

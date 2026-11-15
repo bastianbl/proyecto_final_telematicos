@@ -64,3 +64,15 @@ services:
     build: ./
     environment:
       BACKEND_ID: "7"
+
+  # Interfaz grafica (nginx): http://localhost:8090
+  interfaz:
+    build: ../interfaz
+    ports:
+      - "127.0.0.1:8090:80"
+    environment:
+      BACKEND_COUNT: "${BACKEND_COUNT:-3}"
+      BALANCER_METHOD: "${BALANCER_METHOD:-byrequests}"
+    depends_on:
+      balanceador:
+        condition: service_started

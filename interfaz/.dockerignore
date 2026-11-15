@@ -1,0 +1,5 @@
+# Solo la plantilla y la pagina entran en la imagen.
+*
+!default.conf.template
+!html
+!html/**

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Panel del balanceador</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="top">
+    <div>
+      <h1>Panel del balanceador</h1>
+      <p class="sub">Apache <code>mod_proxy_balancer</code> · Servicios Telemáticos</p>
+    </div>
+    <div class="chips">
+      <span class="chip" id="chip-lb"><span class="dot"></span><span id="lb-text">Balanceador: …</span></span>
+      <span class="chip">Método: <strong id="cfg-metodo">…</strong></span>
+      <span class="chip">Backends: <strong id="cfg-count">…</strong></span>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>Enviar peticiones a través del balanceador</h2>
+      <p class="hint">Cada petición va a <code>/api/…</code>; nginx la reenvía a Apache y Apache elige el backend.</p>
+
+      <form id="form" class="controls">
+        <label>Ruta
+          <select id="ruta">
+            <option value="/">/ (inmediata)</option>
+            <option value="/work" selected>/work (simula carga)</option>
+          </select>
+        </label>
+        <label>Peticiones
+          <input id="cantidad" type="number" min="1" max="1000" value="21">
+        </label>
+        <label>Simultáneas
+          <select id="concurrencia">
+            <option>1</option><option>2</option><option>3</option>
+            <option>4</option><option>5</option><option selected>6</option>
+          </select>
+        </label>
+        <label>delay_ms <span class="muted">(opcional)</span>
+          <input id="delay" type="number" min="0" max="10000" placeholder="por defecto">
+        </label>
+        <div class="buttons">
+          <button type="submit" id="btn-enviar" class="primary">Enviar</button>
+          <button type="button" id="btn-continuo">Modo continuo</button>
+          <button type="button" id="btn-reset" class="ghost">Reiniciar conteo</button>
+        </div>
+      </form>
+
+      <div class="summary">
+        <div><span class="k">Correctas</span><span class="v" id="s-ok">0</span></div>
+        <div><span class="k">Fallidas</span><span class="v" id="s-fail">0</span></div>
+        <div><span class="k">Latencia media</span><span class="v" id="s-lat">–</span></div>
+        <div><span class="k">Último lote</span><span class="v" id="s-tiempo">–</span></div>
+      </div>
+
+      <div class="split">
+        <div>
+          <h3>Reparto por backend</h3>
+          <div id="barras" class="bars"></div>
+        </div>
+        <div>
+          <h3>Últimas respuestas</h3>
+          <ol id="log" class="log"></ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Estado de cada backend</h2>
+      <p class="hint">Consulta directa a <code>backendN</code> cada 2 s (sin pasar por Apache): <code>/health</code>, <code>/info</code> y <code>/metrics</code>.</p>
+      <div id="tarjetas" class="cards"></div>
+    </section>
+  </main>
+
+  <footer>El navegador permite como máximo 6 conexiones simultáneas por servidor; para más carga usa Artillery.</footer>
+</body>
+</html>

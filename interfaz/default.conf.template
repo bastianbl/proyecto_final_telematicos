@@ -1,0 +1,60 @@
+# Plantilla de nginx. Al arrancar, la imagen oficial reemplaza ${BACKEND_COUNT}
+# y ${BALANCER_METHOD} (variables de entorno) y genera conf.d/default.conf.
+# Las variables propias de nginx ($1, $destino, ...) no se tocan porque no
+# existen como variables de entorno.
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # DNS interno de Docker. Con proxy_pass a una VARIABLE, nginx resuelve el
+    # nombre en cada peticion (cacheado 5 s) en lugar de una sola vez al arrancar:
+    #  - arranca aunque backend4..7 no existan en el escenario de 3 backends;
+    #  - si el balanceador se recrea y cambia de IP, nginx lo encuentra igual.
+    resolver 127.0.0.11 valid=5s ipv6=off;
+    resolver_timeout 2s;
+
+    # Pagina estatica. CSP estricta: solo recursos del mismo origen,
+    # nada de scripts en linea ni CDN externos.
+    location / {
+        add_header Content-Security-Policy "default-src 'self'; frame-ancestors 'none'" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header Cache-Control "no-cache" always;
+        try_files $uri $uri/ =404;
+    }
+
+    # Configuracion del escenario, inyectada desde el entorno del contenedor.
+    location = /panel-config.json {
+        access_log off;
+        default_type application/json;
+        add_header Cache-Control "no-store" always;
+        return 200 '{"backendCount": ${BACKEND_COUNT}, "metodo": "${BALANCER_METHOD}"}';
+    }
+
+    # /api/<ruta> -> balanceador:80/<ruta>. Es el camino REAL de un usuario:
+    # Apache elige que backend responde. Como la pagina y la API comparten
+    # origen (localhost:8090), el navegador no necesita CORS.
+    location /api/ {
+        set $balanceador balanceador:80;
+        rewrite ^/api/(.*)$ /$1 break;
+        proxy_pass http://$balanceador;
+        proxy_http_version 1.1;
+        proxy_connect_timeout 2s;
+        proxy_read_timeout 15s;
+        add_header Cache-Control "no-store" always;
+    }
+
+    # /directo/N/<health|info|metrics> -> backendN:80 SIN pasar por Apache.
+    # Solo para observar cada backend por separado; solo rutas de monitoreo
+    # (no /work), y solo los nombres backend1..backend7.
+    location ~ ^/directo/([1-7])/(health|info|metrics)$ {
+        access_log off;
+        set $destino http://backend$1:80/$2;
+        proxy_pass $destino;
+        proxy_http_version 1.1;
+        proxy_connect_timeout 1s;
+        proxy_read_timeout 3s;
+        add_header Cache-Control "no-store" always;
+    }
+}
