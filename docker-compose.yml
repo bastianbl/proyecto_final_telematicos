@@ -11,6 +11,14 @@ x-backend-common: &backend-common
     context: ./backend
     dockerfile: Dockerfile
   restart: unless-stopped
+  # GET /health a traves de Apache (puerto 80) dentro del contenedor:
+  # falla si cae Apache o app.py. depends_on: service_healthy lo usa.
+  healthcheck:
+    test: ["CMD", "python3", "/app/healthcheck.py", "http://127.0.0.1:80/health"]
+    interval: 5s
+    timeout: 3s
+    retries: 3
+    start_period: 15s
   networks:
     - red-proyecto
 

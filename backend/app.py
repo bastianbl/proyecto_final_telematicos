@@ -11,9 +11,16 @@ Endpoints de observacion (JSON, los usa la interfaz grafica):
   GET /info    -> identidad del contenedor y configuracion de /work
   GET /metrics -> contadores: peticiones por ruta y codigo, activas, pico, tiempos de /work
 
+Arquitectura: dentro del contenedor, Apache httpd escucha en :80 y hace proxy
+inverso a este programa, que solo escucha en 127.0.0.1:8000 (no es alcanzable
+desde fuera del contenedor).
+
 Variables de entorno:
   BACKEND_ID     (obligatoria) numero del backend: 1..7
-  PORT           puerto interno, por defecto 80 (contrato con el balanceador)
+  APP_HOST       direccion donde escucha app.py, por defecto 127.0.0.1
+  APP_PORT       puerto donde escucha app.py, por defecto 8000
+  PORT           puerto publico del contenedor (el de Apache), por defecto 80;
+                 solo se informa en /info
   WORK_DELAY_MS  espera (I/O simulada) de /work en ms, por defecto 200
   WORK_CPU_MS    calculo activo (CPU) de /work en ms, por defecto 0
   WORK_MAX_MS    tope para los valores pasados por query string, por defecto 10000
@@ -48,7 +55,9 @@ if not BACKEND_ID:
     sys.exit("ERROR: falta la variable de entorno BACKEND_ID")
 
 NAME = f"backend{BACKEND_ID}"
-PORT = env_int("PORT", 80)
+APP_HOST = os.environ.get("APP_HOST", "127.0.0.1").strip() or "127.0.0.1"
+APP_PORT = env_int("APP_PORT", 8000)
+PORT = env_int("PORT", 80)  # puerto publico (Apache), no el de este proceso
 WORK_DELAY_MS = env_int("WORK_DELAY_MS", 200)
 WORK_CPU_MS = env_int("WORK_CPU_MS", 0)
 WORK_MAX_MS = env_int("WORK_MAX_MS", 10000)
@@ -226,12 +235,17 @@ class Handler(BaseHTTPRequestHandler):
         # (Apache, Docker y la interfaz): no llenar el log con ellos.
         path = urlsplit(self.path).path
         if path not in ("/health", "/info", "/metrics"):
-            sys.stdout.write(f"[{NAME}] {self.address_string()} {fmt % args}\n")
+            # Detras de Apache la conexion siempre viene de 127.0.0.1; el
+            # cliente real llega en X-Forwarded-For (lo anade mod_proxy).
+            # Solo se usa para el log, no para decidir nada.
+            xff = self.headers.get("X-Forwarded-For", "") if self.headers else ""
+            client = xff.split(",")[0].strip() or self.address_string()
+            sys.stdout.write(f"[{NAME}] {client} {fmt % args}\n")
             sys.stdout.flush()
 
 
 def main():
-    server = ThreadingHTTPServer(("0.0.0.0", PORT), Handler)
+    server = ThreadingHTTPServer((APP_HOST, APP_PORT), Handler)
     server.daemon_threads = True
 
     # Como PID 1 del contenedor, Python no termina con SIGTERM salvo que
@@ -245,7 +259,7 @@ def main():
     signal.signal(signal.SIGINT, stop)
 
     print(
-        f"[{NAME}] escuchando en :{PORT} "
+        f"[{NAME}] app.py escuchando en {APP_HOST}:{APP_PORT} "
         f"(WORK_DELAY_MS={WORK_DELAY_MS}, WORK_CPU_MS={WORK_CPU_MS})",
         flush=True,
     )

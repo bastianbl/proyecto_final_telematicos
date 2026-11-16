@@ -52,6 +52,9 @@ h3 { margin: 1rem 0 .5rem; font-size: .95rem; color: var(--muted); font-weight: 
   background: var(--panel); border: 1px solid var(--border); border-radius: 999px;
   padding: .3rem .8rem; font-size: .9rem;
 }
+.escenario { gap: .3rem; }
+.escenario button { padding: .1rem .65rem; border-radius: 999px; font-weight: 600; }
+.escenario button.sel { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
 .dot { width: .6rem; height: .6rem; border-radius: 50%; background: var(--muted); flex: none; }
 .dot.ok { background: var(--ok); }
 .dot.bad { background: var(--bad); }

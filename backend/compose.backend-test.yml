@@ -5,9 +5,16 @@
 #
 # Ejecutar desde la raiz del repositorio:
 #   docker compose -p backend-lab -f backend/compose.backend-test.yml up -d --build
-#
-# Los healthchecks NO se repiten aqui: los aporta el HEALTHCHECK del Dockerfile
-# de backend/, y depends_on: service_healthy los usa igual.
+
+# Mismo healthcheck que el docker-compose.yml raiz: GET /health a traves de
+# Apache (puerto 80) dentro del contenedor.
+x-backend-healthcheck: &backend-healthcheck
+  test: ["CMD", "python3", "/app/healthcheck.py", "http://127.0.0.1:80/health"]
+  interval: 5s
+  timeout: 3s
+  retries: 3
+  start_period: 15s
+
 services:
   balanceador:
     build:
@@ -28,51 +35,49 @@ services:
 
   backend1:
     build: ./
+    healthcheck: *backend-healthcheck
     environment:
       BACKEND_ID: "1"
 
   backend2:
     build: ./
+    healthcheck: *backend-healthcheck
     environment:
       BACKEND_ID: "2"
 
   backend3:
     build: ./
+    healthcheck: *backend-healthcheck
     environment:
       BACKEND_ID: "3"
 
   backend4:
     profiles: ["cinco", "siete"]
     build: ./
+    healthcheck: *backend-healthcheck
     environment:
       BACKEND_ID: "4"
 
   backend5:
     profiles: ["cinco", "siete"]
     build: ./
+    healthcheck: *backend-healthcheck
     environment:
       BACKEND_ID: "5"
 
   backend6:
     profiles: ["siete"]
     build: ./
+    healthcheck: *backend-healthcheck
     environment:
       BACKEND_ID: "6"
 
   backend7:
     profiles: ["siete"]
     build: ./
+    healthcheck: *backend-healthcheck
     environment:
       BACKEND_ID: "7"
 
-  # Interfaz grafica (nginx): http://localhost:8090
-  interfaz:
-    build: ../interfaz
-    ports:
-      - "127.0.0.1:8090:80"
-    environment:
-      BACKEND_COUNT: "${BACKEND_COUNT:-3}"
-      BALANCER_METHOD: "${BALANCER_METHOD:-byrequests}"
-    depends_on:
-      balanceador:
-        condition: service_started
+# La interfaz grafica se prueba con el proyecto completo:
+#   docker compose -f docker-compose.yml -f interfaz/compose.interfaz.yml up -d --build

@@ -1,4 +1,6 @@
-# Solo app.py y healthcheck.py entran en la imagen.
+# Solo estos archivos entran en la imagen.
 *
 !app.py
 !healthcheck.py
+!backend.conf
+!entrypoint.sh

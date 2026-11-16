@@ -1,0 +1,84 @@
+# Añade la interfaz grafica al proyecto completo SIN modificar docker-compose.yml.
+# Ejecutar desde la raiz del repositorio:
+#   docker compose -f docker-compose.yml -f interfaz/compose.interfaz.yml up -d --build
+# Abrir http://localhost:8090 y elegir 3, 5 o 7 backends en la cabecera.
+#
+# Como funciona:
+#  - Los 7 backends quedan siempre encendidos (se anulan sus perfiles).
+#  - Hay tres balanceadores extra con la MISMA imagen del integrante 1:
+#    balanceador3 (backend1-3), balanceador5 (backend1-5), balanceador7 (backend1-7).
+#  - La interfaz envia las peticiones al balanceador que coincide con el numero
+#    elegido, asi cambiar de escenario no exige reiniciar nada.
+#  - El "balanceador" principal (puerto 8080, scripts y Artillery) no cambia.
+# Las rutas son relativas al PRIMER archivo (la raiz).
+
+x-balanceador-panel: &balanceador-panel
+  build:
+    context: ./balanceador
+    dockerfile: Dockerfile
+  restart: unless-stopped
+  networks:
+    - red-proyecto
+
+services:
+  # !reset quita los perfiles "cinco"/"siete": los 7 backends arrancan siempre.
+  backend4:
+    profiles: !reset []
+  backend5:
+    profiles: !reset []
+  backend6:
+    profiles: !reset []
+  backend7:
+    profiles: !reset []
+
+  balanceador3:
+    <<: *balanceador-panel
+    environment:
+      BACKEND_COUNT: "3"
+      BALANCER_METHOD: "${BALANCER_METHOD:-byrequests}"
+    depends_on:
+      backend1: { condition: service_healthy }
+      backend2: { condition: service_healthy }
+      backend3: { condition: service_healthy }
+
+  balanceador5:
+    <<: *balanceador-panel
+    environment:
+      BACKEND_COUNT: "5"
+      BALANCER_METHOD: "${BALANCER_METHOD:-byrequests}"
+    depends_on:
+      backend1: { condition: service_healthy }
+      backend2: { condition: service_healthy }
+      backend3: { condition: service_healthy }
+      backend4: { condition: service_healthy }
+      backend5: { condition: service_healthy }
+
+  balanceador7:
+    <<: *balanceador-panel
+    environment:
+      BACKEND_COUNT: "7"
+      BALANCER_METHOD: "${BALANCER_METHOD:-byrequests}"
+    depends_on:
+      backend1: { condition: service_healthy }
+      backend2: { condition: service_healthy }
+      backend3: { condition: service_healthy }
+      backend4: { condition: service_healthy }
+      backend5: { condition: service_healthy }
+      backend6: { condition: service_healthy }
+      backend7: { condition: service_healthy }
+
+  interfaz:
+    build:
+      context: ./interfaz
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${PANEL_PORT:-8090}:80"
+    environment:
+      BACKEND_COUNT: "3"   # escenario que aparece seleccionado al abrir la pagina
+      BALANCER_METHOD: "${BALANCER_METHOD:-byrequests}"
+    depends_on:
+      balanceador3: { condition: service_started }
+      balanceador5: { condition: service_started }
+      balanceador7: { condition: service_started }
+    networks:
+      - red-proyecto

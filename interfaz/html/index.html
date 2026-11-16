@@ -16,14 +16,18 @@
     <div class="chips">
       <span class="chip" id="chip-lb"><span class="dot"></span><span id="lb-text">Balanceador: …</span></span>
       <span class="chip">Método: <strong id="cfg-metodo">…</strong></span>
-      <span class="chip">Backends: <strong id="cfg-count">…</strong></span>
+      <span class="chip escenario" role="group" aria-label="Número de backends">Backends:
+        <button type="button" data-n="3">3</button>
+        <button type="button" data-n="5">5</button>
+        <button type="button" data-n="7">7</button>
+      </span>
     </div>
   </header>
 
   <main>
     <section class="panel">
       <h2>Enviar peticiones a través del balanceador</h2>
-      <p class="hint">Cada petición va a <code>/api/…</code>; nginx la reenvía a Apache y Apache elige el backend.</p>
+      <p class="hint">Cada petición va al balanceador del escenario elegido (<code id="lb-nombre">balanceador3</code>); Apache elige el backend.</p>
 
       <form id="form" class="controls">
         <label>Ruta

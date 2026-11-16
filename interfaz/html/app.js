@@ -6,8 +6,11 @@ const POLL_MS = 2000;
 const LOG_MAX = 15;
 
 const $ = (id) => document.getElementById(id);
+// Peticiones sugeridas por escenario: las mismas de las pruebas del proyecto
+// (21 -> 7 c/u, 35 -> 7 c/u, 70 -> 10 c/u).
+const PETICIONES = { 3: 21, 5: 35, 7: 70 };
 const st = {
-  backendCount: 7,
+  backendCount: 3,
   conteo: {},          // { backend1: n, ... }
   ok: 0, fail: 0, latSuma: 0,
   ocupado: false,
@@ -25,7 +28,34 @@ async function cargarConfig() {
   } catch {
     $('cfg-metodo').textContent = '?';
   }
-  $('cfg-count').textContent = String(st.backendCount);
+}
+
+// ---------- Escenario: 3, 5 o 7 backends ----------
+// Cada escenario tiene su propio balanceador (balanceador3/5/7), así que
+// cambiar de escenario es inmediato y no reinicia ningún contenedor.
+function cambiarEscenario(n) {
+  if (st.ocupado) return;
+  st.continuo = false;
+  const bc = $('btn-continuo');
+  bc.classList.remove('active');
+  bc.textContent = 'Modo continuo';
+
+  st.backendCount = n;
+  document.querySelectorAll('.escenario button').forEach((b) => {
+    b.classList.toggle('sel', Number(b.dataset.n) === n);
+  });
+  $('lb-nombre').textContent = `balanceador${n}`;
+  $('cantidad').value = String(PETICIONES[n]);
+
+  // Tarjetas: exactamente n.
+  $('tarjetas').textContent = '';
+  st.tarjetas = {};
+  for (let i = 1; i <= n; i++) crearTarjeta(i);
+
+  // Conteos y barras desde cero.
+  $('barras').textContent = '';
+  reiniciarConteo();
+  consultarBalanceador();
 }
 
 // ---------- Peticiones a través del balanceador ----------
@@ -33,7 +63,7 @@ function urlPeticion() {
   const ruta = $('ruta').value;
   const delay = $('delay').value.trim();
   const q = ruta === '/work' && delay !== '' ? `?delay_ms=${encodeURIComponent(delay)}` : '';
-  return '/api' + ruta + q;
+  return `/lb/${st.backendCount}${ruta}${q}`;
 }
 
 async function unaPeticion(url) {
@@ -215,13 +245,14 @@ async function consultarBackend(i) {
 
 async function consultarBalanceador() {
   const chip = $('chip-lb');
+  const n = st.backendCount;
   try {
-    const r = await fetch('/api/health', { cache: 'no-store' });
+    const r = await fetch(`/lb/${n}/health`, { cache: 'no-store' });
     chip.querySelector('.dot').className = r.ok ? 'dot ok' : 'dot bad';
-    $('lb-text').textContent = r.ok ? 'Balanceador: en línea' : `Balanceador: HTTP ${r.status}`;
+    $('lb-text').textContent = r.ok ? `balanceador${n}: en línea` : `balanceador${n}: HTTP ${r.status}`;
   } catch {
     chip.querySelector('.dot').className = 'dot bad';
-    $('lb-text').textContent = 'Balanceador: sin respuesta';
+    $('lb-text').textContent = `balanceador${n}: sin respuesta`;
   }
 }
 
@@ -257,17 +288,22 @@ $('btn-continuo').addEventListener('click', () => {
   if (st.continuo) continuo();
 });
 
-$('btn-reset').addEventListener('click', () => {
+function reiniciarConteo() {
   st.conteo = {}; st.ok = 0; st.fail = 0; st.latSuma = 0;
   $('log').textContent = '';
   $('s-tiempo').textContent = '–';
   pintarResumen();
+}
+
+$('btn-reset').addEventListener('click', reiniciarConteo);
+
+document.querySelectorAll('.escenario button').forEach((b) => {
+  b.addEventListener('click', () => cambiarEscenario(Number(b.dataset.n)));
 });
 
 // ---------- Inicio ----------
 (async () => {
   await cargarConfig();
-  for (let i = 1; i <= st.backendCount; i++) crearTarjeta(i);
-  pintarResumen();
+  cambiarEscenario(st.backendCount);
   ciclo();
 })();
