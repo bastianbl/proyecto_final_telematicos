@@ -74,6 +74,26 @@ en curso, repartidas entre 3, 5 o 7 backends. Por eso ningún escenario saturó 
 (p95 ≈ 205-370 ms con 200 ms de trabajo simulado). En el informe conviene hablar de
 "N usuarios que llegan en 30 s", no de "N usuarios concurrentes".
 
+**Comprobación (16/11/2026).** El aviso `TimeoutNaNWarning` aparece en **las 24 de 24**
+salidas `.txt` publicadas, y la sesión media de los 24 JSON está entre 625 y 935 ms. Una
+corrida nueva con la imagen fijada 2.0.34 (`make carga CARGA=carga500`) da también una
+sesión media de 685 ms: el problema es de `think: 0.5` con esta versión de Artillery, no de
+una ejecución concreta. `carga.yml` y los resultados publicados **no se modificaron**.
+
+**Por qué los resultados publicados siguen siendo válidos como comparación entre escenarios:**
+
+- **El defecto es idéntico en las 24 corridas.** Mismo escenario, misma versión de Artillery,
+  mismo aviso. Todas las configuraciones (3/5/7 backends × 2 algoritmos × 4 cargas) recibieron
+  exactamente el mismo patrón de peticiones, así que la comparación entre ellas es justa.
+- **Lo que se mide por petición se midió bien.** Cada usuario hizo sus 3 peticiones a `/work`.
+  La latencia (media, p95, p99), los errores y el reparto por backend (`X-Backend-ID`) no
+  dependen de la pausa entre peticiones.
+- **El total de peticiones y las llegadas no cambian.** Llegaron N usuarios en 30 s y cada uno
+  hizo 3 peticiones (3 × N en total), y el throughput coincide con la carga ofrecida.
+- **Lo que sí cambia es la intensidad:** hubo menos usuarios a la vez (tabla de arriba). Por eso
+  los resultados **no** sirven para hablar de saturación o capacidad máxima; para eso está
+  `concurrencia.yml` (~500 usuarios simultáneos, con `think: 1`).
+
 ## Escenarios adicionales (preparados, todavía sin ejecutar)
 
 No reemplazan a `carga.yml` ni a los resultados publicados. Sus resultados van a
