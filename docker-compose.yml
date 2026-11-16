@@ -178,8 +178,10 @@ services:
       - /results/artillery-report.json
     # Comprueba que el binario de Artillery funciona dentro del contenedor.
     # Solo tiene efecto mientras la prueba esta en marcha (ver README).
+    # En la imagen 2.0.34 Artillery esta en el PATH (/usr/local/bin/artillery);
+    # la ruta /home/node/artillery/bin/run de versiones anteriores ya no existe.
     healthcheck:
-      test: ["CMD-SHELL", "/home/node/artillery/bin/run version > /dev/null"]
+      test: ["CMD-SHELL", "artillery version > /dev/null"]
       interval: 30s
       timeout: 10s
       retries: 3
