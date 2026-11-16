@@ -11,6 +11,8 @@ services:
     environment:
       BACKEND_COUNT: "${BACKEND_COUNT:-3}"
       BALANCER_METHOD: "${BALANCER_METHOD:-byrequests}"
+      BACKEND_WEIGHTS: "${BACKEND_WEIGHTS:-}"
+      BACKEND_SPARES: "${BACKEND_SPARES:-0}"
     depends_on:
       backend1:
         condition: service_healthy
