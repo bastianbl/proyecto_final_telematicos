@@ -1,0 +1,7 @@
+# Override no invasivo para probar el balanceador avanzado con docker-compose.yml de la raiz.
+# Ejecutar siempre: docker compose -f docker-compose.yml -f balanceador/compose.advanced.yml ...
+services:
+  balanceador:
+    environment:
+      BACKEND_WEIGHTS: "${BACKEND_WEIGHTS:-}"
+      BACKEND_SPARES: "${BACKEND_SPARES:-0}"

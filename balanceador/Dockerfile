@@ -1,11 +1,9 @@
-# Integrante 1: Apache HTTP Server con mod_proxy_balancer
-# Imagen de la rama 2.4 fijada para reducir diferencias entre equipos.
+# Parte 1: Apache con tres estrategias de balanceo y monitoreo activo.
 FROM httpd:2.4.69
 
-# La imagen oficial httpd no incluye a2enmod (propio de Debian apache2).
-# Habilitamos los modulos que ya trae compilados y comprobamos cada uno.
+# La imagen oficial httpd no utiliza a2enmod.
 RUN set -eux; \
-    for mod in proxy proxy_http slotmem_shm proxy_balancer lbmethod_byrequests lbmethod_bybusyness status watchdog proxy_hcheck; do \
+    for mod in proxy proxy_http slotmem_shm proxy_balancer lbmethod_byrequests lbmethod_bybusyness lbmethod_bytraffic status watchdog proxy_hcheck; do \
         sed -i -E "s|^[[:space:]]*#[[:space:]]*(LoadModule[[:space:]]+${mod}_module[[:space:]]+modules/mod_${mod}[.]so)|\\1|" /usr/local/apache2/conf/httpd.conf; \
         grep -Eq "^[[:space:]]*LoadModule[[:space:]]+${mod}_module[[:space:]]" /usr/local/apache2/conf/httpd.conf; \
     done; \
