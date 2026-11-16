@@ -256,6 +256,8 @@ python scripts\resumen.py
 - Escenarios y detalles de Artillery: `pruebas/README_PRUEBAS.md`.
 - Definición de métricas (p95/p99, throughput, tasa de errores), tablas y gráficas: `metricas/README.md`.
 - Comparación y conclusiones: `metricas/ANALISIS.md`.
+- **Pruebas nuevas (16/11/2026)**: concurrencia real (~500 usuarios simultáneos, `make concurrencia`) y backends heterogéneos (`pruebas/compose.heterogeneo.yml`). Resultados en `pruebas/resultados/make/`, análisis en `metricas/ANALISIS.md` (sección "Pruebas nuevas") y gráfica en `metricas/graficas/heterogeneo_algoritmos.png`. Con backends heterogéneos, `bybusyness` envía el 12 % de las peticiones al backend lento (frente al 33 % de `byrequests`) y baja la latencia media un 37 %.
+- Los resultados publicados de las 24 corridas se midieron con el backend solo en Python y con pausas que no se aplicaron (`think: 0.5`); ver "Limitaciones" en `metricas/ANALISIS.md`.
 
 Los resultados reportados deben salir de ejecuciones reales (`pruebas/resultados/`); no se inventan datos.
 
@@ -315,7 +317,7 @@ proyecto_final_telematicos/
 | `docker-compose.yml` con balanceador, mínimo 3 backends y Artillery en una sola red | Servicios `balanceador`, `backend1..3` (más 4-7 o `backend × N`) y `artillery`, todos en `red-proyecto` | `docker-compose.yml` |
 | Cada servicio con su propio Dockerfile e imagen base documentada | `httpd:2.4.69`, `httpd:2.4.69` + Python 3, `artilleryio/artillery:2.0.34`; versión exacta y motivo en comentarios | `balanceador/Dockerfile`, `backend/Dockerfile`, `pruebas/Dockerfile` |
 | Variables configurables (número de backends, puerto del balanceador) en `.env` | `BACKEND_COUNT`, `BALANCER_PORT`, `BALANCER_METHOD`, `WORK_*` | `.env.example` |
-| Health checks para cada servicio en `docker-compose.yml` | Balanceador: `bash` + `/dev/tcp` contra `/server-status?auto`. Backends: `/health` a través de su Apache. Artillery: `artillery version`. `depends_on: service_healthy` | `docker-compose.yml` |
+| Health checks para cada servicio en `docker-compose.yml` | Balanceador: `bash` + `/dev/tcp` contra `/server-status?auto`. Backends: `/health` a través de su Apache. Interfaz: `wget` a `/panel-config.json`. Artillery: `artillery version`. `depends_on: service_healthy` | `docker-compose.yml` |
 | Makefile o script para escalar con `docker compose up --scale backend=N` | `make scale N=…`: `--scale backend=N` y recreación del balanceador con un miembro por réplica | `Makefile`, `balanceador/entrypoint.sh`, `backend/entrypoint.sh` |
 | Volúmenes para logs del balanceador y resultados de Artillery | `./logs/balanceador` → `/usr/local/apache2/logs`; `./pruebas/resultados` → `/results` | `docker-compose.yml` |
 | README con despliegue paso a paso y arquitectura | Secciones "Arquitectura" y "Despliegue paso a paso" | `README.md` |

@@ -1,10 +1,10 @@
-# ESCENARIO ADICIONAL (preparado, todavia SIN EJECUTAR): backends heterogeneos.
+# ESCENARIO ADICIONAL (ejecutado el 16/11/2026; resultados en pruebas/resultados/make/ y analisis en metricas/ANALISIS.md): backends heterogeneos.
 # Se suma a docker-compose.yml sin modificarlo: backend1 tarda 1000 ms en /work
 # y los demas 200 ms. Sirve para ver la diferencia entre algoritmos:
 #  - byrequests reparte por turnos sin mirar la carga: backend1 recibe lo mismo
-#    que los demas y acumula una cola (sube la latencia p95/p99);
+#    que los demas y acumula una cola (sube la latencia media: 470 ms medidos);
 #  - bybusyness envia cada peticion al backend con menos peticiones activas:
-#    backend1 recibe menos.
+#    backend1 recibe menos (12 % medido; media 296 ms).
 # (Prueba rapida previa con curl, 60 peticiones de 10 en 10: 20/20/20 frente a 8/26/26.)
 #
 # Ejecutar desde la raiz, una vez con cada algoritmo:

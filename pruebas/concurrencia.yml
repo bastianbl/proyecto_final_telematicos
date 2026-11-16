@@ -1,4 +1,4 @@
-# ESCENARIO ADICIONAL (preparado, todavia SIN EJECUTAR): ~500 usuarios SIMULTANEOS.
+# ESCENARIO ADICIONAL (ejecutado el 16/11/2026; resultados en pruebas/resultados/make/ y analisis en metricas/ANALISIS.md): ~500 usuarios SIMULTANEOS.
 # No reemplaza a carga.yml: los resultados publicados se hicieron con carga.yml.
 #
 # Diferencia con carga.yml: alli "1000 usuarios" son 1000 LLEGADAS en 30 s y cada

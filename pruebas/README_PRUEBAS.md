@@ -94,7 +94,7 @@ una ejecución concreta. `carga.yml` y los resultados publicados **no se modific
   los resultados **no** sirven para hablar de saturación o capacidad máxima; para eso está
   `concurrencia.yml` (~500 usuarios simultáneos, con `think: 1`).
 
-## Escenarios adicionales (preparados, todavía sin ejecutar)
+## Escenarios adicionales (ejecutados el 16/11/2026)
 
 No reemplazan a `carga.yml` ni a los resultados publicados. Sus resultados van a
 `pruebas/resultados/make/`, que `scripts/resumen.py` no lee, así que no alteran `resumen.csv`.
