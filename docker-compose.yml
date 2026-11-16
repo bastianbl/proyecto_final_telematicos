@@ -144,6 +144,16 @@ services:
       BACKEND_COUNT: "${BACKEND_COUNT:-3}"
       BALANCER_METHOD: "${BALANCER_METHOD:-byrequests}"
       PANEL_DEMO: "0"
+    # nginx:alpine trae wget (busybox). /panel-config.json lo genera el propio
+    # nginx desde la plantilla: si responde, nginx esta arriba y su
+    # configuracion se cargo bien. Mismo criterio que el HEALTHCHECK del
+    # Dockerfile, pero declarado en el compose como pide el enunciado.
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/panel-config.json || exit 1"]
+      interval: 5s
+      timeout: 2s
+      retries: 5
+      start_period: 3s
     # Resultados y metricas, SOLO LECTURA: la interfaz no puede modificarlos.
     volumes:
       - ./metricas:/usr/share/nginx/html/datos/metricas:ro
