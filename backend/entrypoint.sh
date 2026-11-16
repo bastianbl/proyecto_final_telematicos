@@ -7,7 +7,33 @@
 # 5. exec de httpd-foreground: Apache pasa a ser el PID 1.
 set -eu
 
-: "${BACKEND_ID:?ERROR: falta la variable de entorno BACKEND_ID}"
+# Modo --scale (docker compose up --scale backend=N): las replicas no reciben
+# BACKEND_ID. Docker las llama <proyecto>-backend-1, -2, ... y su DNS interno
+# responde el DNS inverso de la IP del contenedor con ese nombre, asi que el
+# numero se toma de ahi. Con backend1..backend7 BACKEND_ID viene del compose.
+if [ -z "${BACKEND_ID:-}" ]; then
+    BACKEND_ID=$(python3 - <<'EOF'
+import re, socket, sys, time
+for _ in range(20):
+    try:
+        ip = socket.gethostbyname(socket.gethostname())
+        nombre = socket.gethostbyaddr(ip)[0].split(".")[0]
+        m = re.search(r"-(\d+)$", nombre)
+        if m:
+            print(m.group(1))
+            sys.exit(0)
+    except OSError:
+        pass
+    time.sleep(0.5)
+sys.exit(1)
+EOF
+) || BACKEND_ID=""
+    if [ -n "$BACKEND_ID" ]; then
+        echo "[backend$BACKEND_ID] BACKEND_ID deducido del nombre del contenedor (modo --scale)" >&2
+    fi
+fi
+: "${BACKEND_ID:?ERROR: falta BACKEND_ID y no se pudo deducir del nombre del contenedor}"
+export BACKEND_ID
 WORK_MAX_MS="${WORK_MAX_MS:-10000}"
 case "$WORK_MAX_MS" in
     ''|*[!0-9]*) echo "ERROR [backend]: WORK_MAX_MS debe ser un entero >= 0 (actual: $WORK_MAX_MS)" >&2; exit 1 ;;

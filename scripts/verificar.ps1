@@ -116,12 +116,14 @@ $min = ($valores | Measure-Object -Minimum).Minimum
 $max = ($valores | Measure-Object -Maximum).Maximum
 Write-Log "       Mín/Máx por backend: $min / $max (informativo; es una prueba funcional, no de rendimiento)"
 
-# 6. Endpoints administrativos
+# 6. Endpoints de estado
+# Desde el equipo local ahora responden 200 (Require ip 127.0.0.1 + redes de Docker
+# en balanceador/balancer.conf); el puerto solo está publicado en 127.0.0.1.
 Write-Log ''
-Write-Log '--- 6. Endpoints administrativos no expuestos ---' 'Cyan'
-foreach ($ruta in @('/balancer-manager', '/server-status')) {
+Write-Log '--- 6. Endpoints de estado (solo desde el equipo local) ---' 'Cyan'
+foreach ($ruta in @('/balancer-manager', '/server-status?auto')) {
     $a = Invoke-Req "$base$ruta" 5
-    Confirmar ($a.Status -eq 403) "Acceso restringido a $ruta" "(HTTP $($a.Status); se espera 403)"
+    Confirmar ($a.Status -eq 200) "Endpoint de estado $ruta" "(HTTP $($a.Status); se espera 200)"
 }
 
 Finalizar

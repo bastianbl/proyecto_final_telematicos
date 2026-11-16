@@ -1,0 +1,3 @@
+# Los escenarios y resultados se montan como volumen: no entran en la imagen.
+*
+!Dockerfile

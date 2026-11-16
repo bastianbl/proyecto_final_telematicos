@@ -4,21 +4,32 @@ Página web servida por **nginx** para ver el balanceador funcionando en vivo.
 
 ## Uso
 
-Desde la raíz del repositorio, un solo comando:
+La interfaz es parte del sistema: está en `docker-compose.yml` con el perfil `interfaz`.
 
 ```bash
-docker compose -f docker-compose.yml -f interfaz/compose.interfaz.yml up -d --build
-xdg-open http://localhost:8090
+make up                                   # Linux/macOS/Git Bash (incluye la interfaz)
+.\scripts\compose.ps1 -Action Interfaz    # Windows
+# o directamente: docker compose --profile interfaz up -d --build
 ```
 
-En la cabecera eliges **Backends: 3 · 5 · 7**. Al elegir un número:
+Abre `http://localhost:8090`. En la cabecera, **Balanceador: Principal** está
+seleccionado. Es el balanceador del proyecto (`:8080`), **el mismo que usan
+Artillery, `verificar.ps1` y los demás scripts**. Por eso, mientras corre una prueba
+de carga, la interfaz la muestra en vivo.
 
-- aparecen exactamente esas tarjetas de backend;
-- las peticiones van a un balanceador que tiene exactamente esos backends;
-- la cantidad de peticiones se ajusta a la de las pruebas del proyecto
-  (21 → 7 c/u, 35 → 7 c/u, 70 → 10 c/u). Pulsa **Enviar**.
+### Modo demostración 3 / 5 / 7
 
-Cambiar de escenario es inmediato: no hay que editar archivos ni reiniciar nada.
+Para cambiar entre 3, 5 y 7 backends desde la página sin reiniciar nada:
+
+```bash
+make demo-escenarios
+# o: docker compose -f docker-compose.yml -f interfaz/compose.interfaz.yml up -d --build --wait
+```
+
+Aparecen los botones **demo 3 · demo 5 · demo 7**. Cada uno usa un balanceador
+de demostración (`balanceador3/5/7`) con exactamente esos backends, y la cantidad
+de peticiones se ajusta a la de las pruebas del proyecto (21, 35, 70). `make up`
+vuelve al modo normal.
 
 Otras funciones:
 
@@ -28,6 +39,26 @@ Otras funciones:
 - **Tarjetas por backend**, actualizadas cada 2 s: sano o sin respuesta,
   contenedor, IP, uptime, peticiones atendidas, activas ahora, pico de activas y
   tiempo medio de `/work`.
+
+## Métricas y resultados
+
+- **Métricas del balanceador en vivo:** cada 2 s se lee `/server-status?auto` del
+  balanceador elegido (por defecto, el principal). Muestra peticiones totales, peticiones/s (calculadas entre
+  dos lecturas), duración media por petición, tráfico, workers ocupados y libres,
+  uptime y los fallos que vio el panel. Incluye las propias consultas del panel
+  (~1 por segundo). Requiere que `balancer.conf` permita las redes de Docker
+  (`Require ip ... 172.16.0.0/12`).
+- **Resultados de las pruebas:**
+  - gráfica de barras (`byrequests` frente a `bybusyness`) y tabla de
+    `metricas/datos/metricas_limpias.csv`, filtradas por número de backends y
+    métrica. Las mediciones marcadas como sospechosas salen en rojo;
+  - las gráficas PNG de `metricas/graficas/`;
+  - el texto de `metricas/ANALISIS.md`;
+  - las corridas nuevas de `make carga` / `make concurrencia`
+    (`pruebas/resultados/make/*.json`).
+
+  Se montan como volúmenes de **solo lectura**: la interfaz no puede modificar
+  ningún resultado.
 
 ## Cómo funciona
 
@@ -56,6 +87,7 @@ navegador ──► nginx :8090 ──┬─ /lb/3/… ──► balanceador3 �
 | `/lb/{3,5,7}/<ruta>` | `http://balanceador{3,5,7}:80/<ruta>` | Camino real de un usuario: Apache elige el backend |
 | `/api/<ruta>` | `http://balanceador:80/<ruta>` | El balanceador principal (se conserva) |
 | `/directo/N/{health,info,metrics}` | `http://backendN:80/...` | Observar cada backend por separado |
+| `/datos/metricas/…`, `/datos/resultados/…` | Archivos de `metricas/` y `pruebas/resultados/` (solo lectura, listado en JSON) | Resultados de las pruebas |
 
 Decisiones:
 

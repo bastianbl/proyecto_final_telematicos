@@ -30,9 +30,29 @@ services:
     restart: unless-stopped
     ports:
       - "127.0.0.1:${BALANCER_PORT:-8080}:80"
+    # La imagen httpd no trae curl ni wget, pero si bash: se abre una conexion
+    # TCP con /dev/tcp y se pide /server-status?auto, que Apache atiende el
+    # mismo (no se reenvia a los backends). Exige "HTTP/1.x 200": comprueba que
+    # Apache RESPONDE, no solo que el proceso existe.
+    healthcheck:
+      test:
+        - CMD
+        - bash
+        - -c
+        - >-
+          exec 3<>/dev/tcp/127.0.0.1/80 &&
+          printf 'GET /server-status?auto HTTP/1.0\r\nHost: localhost\r\n\r\n' >&3 &&
+          head -n 1 <&3 | grep -q ' 200 '
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
     environment:
       BACKEND_COUNT: "${BACKEND_COUNT:-3}"
       BALANCER_METHOD: "${BALANCER_METHOD:-byrequests}"
+      # fijo = backend1..backendN (por defecto); scale = replicas del servicio
+      # "backend" creadas con --scale (lo pone "make scale N=...").
+      BACKEND_MODE: "${BACKEND_MODE:-fijo}"
     depends_on:
       backend1:
         condition: service_healthy
@@ -40,6 +60,13 @@ services:
         condition: service_healthy
       backend3:
         condition: service_healthy
+    # Logs de Apache en el host: balanceo_detallado.log (que backend atendio
+    # cada peticion) sobrevive a "docker compose down". El access/error log
+    # estandar siguen yendo a "docker compose logs". En esa carpeta Apache
+    # tambien deja httpd.pid; si queda uno viejo, Apache solo avisa y lo
+    # sobrescribe.
+    volumes:
+      - ./logs/balanceador:/usr/local/apache2/logs
     networks:
       - red-proyecto
 
@@ -89,17 +116,67 @@ services:
       <<: *backend-environment
       BACKEND_ID: "7"
 
+  # Modo escalable (opcional, perfil "scale"): un unico servicio con N replicas,
+  #   docker compose --profile scale up -d --scale backend=N backend
+  # Cada replica deduce su numero de su nombre (proyecto-telematicos-backend-N).
+  # El balanceador debe recrearse despues con BACKEND_MODE=scale y
+  # BACKEND_COUNT=N para tener un BalancerMember por replica: "make scale N=...".
+  backend:
+    <<: *backend-common
+    profiles: ["scale"]
+    environment:
+      <<: *backend-environment
+
+  # Interfaz grafica (perfil "interfaz"): http://localhost:8090. Observa el
+  # MISMO balanceador que Artillery y los scripts; muestra el reparto, el
+  # estado de cada backend, /server-status y los resultados de las pruebas.
+  # "make up" la incluye; en PowerShell:
+  #   docker compose --profile interfaz up -d --build interfaz
+  interfaz:
+    build:
+      context: ./interfaz
+      dockerfile: Dockerfile
+    profiles: ["interfaz"]
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${PANEL_PORT:-8090}:80"
+    environment:
+      BACKEND_COUNT: "${BACKEND_COUNT:-3}"
+      BALANCER_METHOD: "${BALANCER_METHOD:-byrequests}"
+      PANEL_DEMO: "0"
+    # Resultados y metricas, SOLO LECTURA: la interfaz no puede modificarlos.
+    volumes:
+      - ./metricas:/usr/share/nginx/html/datos/metricas:ro
+      - ./pruebas/resultados:/usr/share/nginx/html/datos/resultados:ro
+    depends_on:
+      balanceador:
+        condition: service_healthy
+    networks:
+      - red-proyecto
+
+  # Servicio de ejecucion puntual: arranca, lanza la prueba y termina.
+  # Imagen propia con version fija de Artillery: pruebas/Dockerfile.
   artillery:
-    image: "${ARTILLERY_IMAGE:-artilleryio/artillery:latest}"
+    build:
+      context: ./pruebas
+      dockerfile: Dockerfile
     profiles: ["artillery"]
     command:
       - run
       - /tests/artillery-smoke.yml
       - --output
       - /results/artillery-report.json
+    # Comprueba que el binario de Artillery funciona dentro del contenedor.
+    # Solo tiene efecto mientras la prueba esta en marcha (ver README).
+    healthcheck:
+      test: ["CMD-SHELL", "/home/node/artillery/bin/run version > /dev/null"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     depends_on:
       balanceador:
-        condition: service_started
+        condition: service_healthy
     networks:
       - red-proyecto
     volumes:

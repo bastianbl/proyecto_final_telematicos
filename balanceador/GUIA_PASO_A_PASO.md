@@ -137,7 +137,7 @@ Puedes añadir `balanceador/evidencias/` para conservar pruebas relevantes. No g
 ### Función de cada archivo
 
 - **`Dockerfile`**: construye Apache 2.4, habilita módulos para el proxy, algoritmos y monitoreo activo (`proxy_hcheck` y su dependencia `watchdog`).
-- **`balancer.conf`**: configura Apache como proxy inverso, define el clúster y restringe los endpoints administrativos con `Require local`.
+- **`balancer.conf`**: configura Apache como proxy inverso, define el clúster y restringe los endpoints administrativos con `Require local` (**actualizado el 16/11/2026:** ahora `Require ip 127.0.0.1 172.16.0.0/12 192.168.65.0/24`, accesibles solo desde el equipo local; ver `CONTRATO_INTEGRACION.md`, sección 6).
 - **`entrypoint.sh`**: valida las variables, genera `balancer-members.conf` con los backends requeridos y arranca Apache.
 - **`compose.test.yml`**: despliega el laboratorio independiente; los perfiles `cinco` y `siete` activan backends extra.
 - **`test-fixtures/`**: servidores temporales para probar distribución y `/health`.
@@ -613,7 +613,7 @@ Este comando no borra tus archivos ni la rama Git. **No uses** `docker system pr
 | Aparece error HTTP 500 | Revisar logs; no afirmar que se solucionó solo porque otra serie no falló. |
 | Faltan los backend4..7 | Revisar perfil `cinco`/`siete`, `BACKEND_COUNT` y estado de contenedores. |
 | Error `^M` al ejecutar `entrypoint.sh` | Corregir saltos de línea CRLF → LF; mantener `.gitattributes`. |
-| `/balancer-manager` devuelve 403 desde Windows | Es el comportamiento previsto por `Require local`; no abrir públicamente. |
+| `/balancer-manager` devuelve 403 desde Windows | Era el comportamiento previsto con `Require local`. **Desde el 16/11/2026 debe responder 200 desde el equipo local**; si da 403, la IP de origen no está en `Require ip` (ver `CONTRATO_INTEGRACION.md`, sección 6). No abrir públicamente. |
 | `byrequests` y `bybusyness` presentan los mismos conteos | Con solicitudes secuenciales es normal; la comparación de desempeño requiere carga concurrente con Artillery. |
 | No aparecen logs antiguos | Pueden haberse eliminado al recrear el contenedor. Utilizar registros/capturas guardados anteriormente. |
 

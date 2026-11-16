@@ -1,0 +1,19 @@
+# ESCENARIO ADICIONAL (preparado, todavia SIN EJECUTAR): backends heterogeneos.
+# Se suma a docker-compose.yml sin modificarlo: backend1 tarda 1000 ms en /work
+# y los demas 200 ms. Sirve para ver la diferencia entre algoritmos:
+#  - byrequests reparte por turnos sin mirar la carga: backend1 recibe lo mismo
+#    que los demas y acumula una cola (sube la latencia p95/p99);
+#  - bybusyness envia cada peticion al backend con menos peticiones activas:
+#    backend1 recibe menos.
+# (Prueba rapida previa con curl, 60 peticiones de 10 en 10: 20/20/20 frente a 8/26/26.)
+#
+# Ejecutar desde la raiz, una vez con cada algoritmo:
+#   BALANCER_METHOD=byrequests docker compose -f docker-compose.yml -f pruebas/compose.heterogeneo.yml up -d --build --wait
+#   make carga CARGA=carga500 BALANCER_METHOD=byrequests
+#   BALANCER_METHOD=bybusyness docker compose -f docker-compose.yml -f pruebas/compose.heterogeneo.yml up -d --build --wait
+#   make carga CARGA=carga500 BALANCER_METHOD=bybusyness
+# Para volver a backends iguales: make up
+services:
+  backend1:
+    environment:
+      WORK_DELAY_MS: "1000"

@@ -16,18 +16,20 @@
     <div class="chips">
       <span class="chip" id="chip-lb"><span class="dot"></span><span id="lb-text">Balanceador: …</span></span>
       <span class="chip">Método: <strong id="cfg-metodo">…</strong></span>
-      <span class="chip escenario" role="group" aria-label="Número de backends">Backends:
-        <button type="button" data-n="3">3</button>
-        <button type="button" data-n="5">5</button>
-        <button type="button" data-n="7">7</button>
+      <span class="chip escenario" role="group" aria-label="Balanceador a observar">Balanceador:
+        <button type="button" data-n="principal" title="El del proyecto (:8080): el mismo que usan Artillery y los scripts">Principal</button>
+        <button type="button" class="demo" data-n="3" hidden title="Demostración: balanceador con 3 backends">demo 3</button>
+        <button type="button" class="demo" data-n="5" hidden title="Demostración: balanceador con 5 backends">demo 5</button>
+        <button type="button" class="demo" data-n="7" hidden title="Demostración: balanceador con 7 backends">demo 7</button>
       </span>
+      <span class="chip">Backends: <strong id="cfg-count">…</strong></span>
     </div>
   </header>
 
   <main>
     <section class="panel">
       <h2>Enviar peticiones a través del balanceador</h2>
-      <p class="hint">Cada petición va al balanceador del escenario elegido (<code id="lb-nombre">balanceador3</code>); Apache elige el backend.</p>
+      <p class="hint">Cada petición va al <strong id="lb-nombre">balanceador principal (:8080)</strong>; Apache elige el backend. Con "Principal" ves también en vivo la carga que lanza Artillery (<code>make carga</code> / <code>correr_pruebas.ps1</code>).</p>
 
       <form id="form" class="controls">
         <label>Ruta
@@ -78,6 +80,52 @@
       <h2>Estado de cada backend</h2>
       <p class="hint">Consulta directa a <code>backendN</code> cada 2 s (sin pasar por Apache): <code>/health</code>, <code>/info</code> y <code>/metrics</code>.</p>
       <div id="tarjetas" class="cards"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Métricas del balanceador en vivo</h2>
+      <p class="hint">Fuente: <code id="st-fuente">/server-status?auto</code> del balanceador elegido, cada 2 s. Incluye las consultas del propio panel.
+        Detalle por miembro: <a href="http://localhost:8080/balancer-manager" target="_blank" rel="noopener">balancer-manager del balanceador principal (:8080)</a>.</p>
+      <div class="summary" id="estado-lb">
+        <div><span class="k">Peticiones totales</span><span class="v" id="m-total">–</span></div>
+        <div><span class="k">Peticiones/s (ahora)</span><span class="v" id="m-rps">–</span></div>
+        <div><span class="k">Duración media/petición</span><span class="v" id="m-dur">–</span></div>
+        <div><span class="k">Tráfico total</span><span class="v" id="m-kb">–</span></div>
+        <div><span class="k">Workers ocupados / libres</span><span class="v" id="m-workers">–</span></div>
+        <div><span class="k">Fallos vistos por el panel</span><span class="v" id="m-fallos">0</span></div>
+        <div><span class="k">Activo hace</span><span class="v" id="m-uptime">–</span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Resultados de las pruebas (Artillery)</h2>
+      <p class="hint">Resultados publicados: <code>metricas/datos/metricas_limpias.csv</code> (integrante 5), a partir de <code>pruebas/resultados/</code>. Solo lectura.
+        "Usuarios" son llegadas en 30 s, no usuarios simultáneos (ver <code>pruebas/README_PRUEBAS.md</code>).</p>
+      <div class="controls">
+        <label>Backends
+          <select id="r-backends"><option>3</option><option>5</option><option>7</option></select>
+        </label>
+        <label>Métrica
+          <select id="r-metrica">
+            <option value="p95">Latencia p95 (ms)</option>
+            <option value="p99">Latencia p99 (ms)</option>
+            <option value="lat_media">Latencia media (ms)</option>
+            <option value="rps">Peticiones/s</option>
+            <option value="desv_reparto_pct">Desviación del reparto (%)</option>
+          </select>
+        </label>
+      </div>
+      <div id="r-grafica" class="grafica"></div>
+      <div class="tabla-wrap"><table id="r-tabla" class="tabla"></table></div>
+
+      <h3>Gráficas del análisis (<code>metricas/graficas/</code>)</h3>
+      <div id="r-galeria" class="galeria"></div>
+
+      <h3>Corridas nuevas (<code>pruebas/resultados/make/</code>)</h3>
+      <div class="tabla-wrap"><table id="r-nuevas" class="tabla"></table></div>
+
+      <h3>Conclusiones (<code>metricas/ANALISIS.md</code>)</h3>
+      <pre id="r-analisis" class="analisis">–</pre>
     </section>
   </main>
 

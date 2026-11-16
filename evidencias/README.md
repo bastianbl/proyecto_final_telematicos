@@ -17,6 +17,7 @@ Desde la raíz del repositorio, con el sistema levantado (`.\scripts\compose.ps1
 | Verificación general | `.\scripts\verificar.ps1` | `verificacion_<N>b_<fecha>.txt` |
 | Caída y recuperación de un backend | `.\scripts\prueba_caida.ps1` | `caida_backendX_<N>b_<método>_<fecha>` (`.csv`, `_resumen.txt`, `_apache.log`, `_apache_eventos.log`, `_backendX.log`) |
 | Foto del estado (logs, estadísticas, config) | `.\scripts\recolectar_evidencias.ps1` | carpeta `snapshot_<N>b_<fecha>/` |
+| Endpoint de estado del balanceador, antes y después de una carga | `.\scripts\capturar_estado.ps1 -Etiqueta antes` / `-Etiqueta despues` (Linux/macOS: `make estado ETIQUETA=antes`) | carpeta `estado_<etiqueta>_<fecha>/` con `balancer-manager.html`, `server-status.txt` y `server-status.html` |
 
 ## Capturas recomendadas
 
@@ -35,6 +36,8 @@ Nombra cada imagen como `NN_descripcion.png` (por ejemplo `03_ps_3backends.png`)
 | 09 | Ejecución de Artillery | salida de `correr_pruebas.ps1` |
 | 10 | Gráficas de métricas | desde `metricas/graficas/` |
 | 11 | Docker Desktop mostrando un backend detenido | durante la prueba de caída |
+| 12 | `/balancer-manager` en el navegador (estado de cada miembro) | `http://localhost:8080/balancer-manager` |
+| 13 | Escalado con `--scale` | `make scale N=4` y `make verificar N=4` |
 
 ## Validación desde cero (la hace una persona distinta al autor)
 

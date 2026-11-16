@@ -1,0 +1,34 @@
+# ESCENARIO ADICIONAL (preparado, todavia SIN EJECUTAR): ~500 usuarios SIMULTANEOS.
+# No reemplaza a carga.yml: los resultados publicados se hicieron con carga.yml.
+#
+# Diferencia con carga.yml: alli "1000 usuarios" son 1000 LLEGADAS en 30 s y cada
+# usuario dura ~0,67 s, asi que solo hubo ~23 a la vez (ver README_PRUEBAS.md).
+# Aqui llegan 500 usuarios en 10 s y cada uno se queda ~72 s (60 vueltas de
+# GET /work de ~0,2 s + 1 s de pausa), asi que durante ~60 s hay ~500 a la vez.
+# Carga aproximada: 500 / 1,2 s ≈ 400 peticiones/s y ≈ 80 en curso a la vez.
+#
+# Pausa ENTERA (think: 1): con "think: 0.5" Artillery mostro TimeoutNaNWarning y
+# la pausa duro ~1 ms. Al ejecutarlo, comprobar que ese aviso NO aparece y que
+# vusers.session_length ronda los 72 000 ms; si no, el escenario no es valido.
+#
+# Ejecutar con el sistema levantado (el resultado va a pruebas/resultados/make/):
+#   make concurrencia
+config:
+  target: "http://balanceador"
+  processor: "./procesador.js"
+  http:
+    timeout: 10
+  phases:
+    - duration: 10
+      arrivalRate: 50
+      name: "500 usuarios simultaneos (llegan en 10 s, se quedan ~72 s)"
+
+scenarios:
+  - name: "Usuarios que permanecen conectados"
+    flow:
+      - loop:
+          - get:
+              url: "/work"
+              afterResponse: "contarBackend"
+          - think: 1
+        count: 60

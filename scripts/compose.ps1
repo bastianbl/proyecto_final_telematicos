@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [ValidateSet('Up', 'Down', 'Restart', 'Status', 'Logs', 'Artillery')]
+    [ValidateSet('Up', 'Down', 'Restart', 'Status', 'Logs', 'Artillery', 'Interfaz')]
     [string]$Action = 'Up',
 
     [ValidateSet(0, 3, 5, 7)]
@@ -79,7 +79,7 @@ function Start-Stack {
 
 function Stop-Stack {
     # Activa todos los perfiles para retirar también servicios que quedaron de una ejecución de 5/7.
-    $allProfiles = @('--profile', 'cinco', '--profile', 'siete', '--profile', 'artillery')
+    $allProfiles = @('--profile', 'cinco', '--profile', 'siete', '--profile', 'artillery', '--profile', 'scale', '--profile', 'interfaz')
     Invoke-Compose ($composeBase + $allProfiles + @('down', '--remove-orphans'))
 }
 
@@ -97,7 +97,7 @@ try {
             Start-Stack
         }
         'Status' {
-            $profileArgs = @('--profile', 'cinco', '--profile', 'siete', '--profile', 'artillery')
+            $profileArgs = @('--profile', 'cinco', '--profile', 'siete', '--profile', 'artillery', '--profile', 'scale', '--profile', 'interfaz')
             Invoke-Compose ($composeBase + $profileArgs + @('ps', '-a'))
         }
         'Logs' {
@@ -108,6 +108,13 @@ try {
             Start-Stack
             $profileArgs = Get-ProfileArguments
             Invoke-Compose ($composeBase + $profileArgs + @('--profile', 'artillery', 'run', '--rm', 'artillery'))
+        }
+        'Interfaz' {
+            # Levanta el sistema (si no lo estaba) y la interfaz: http://localhost:8090
+            Start-Stack
+            $profileArgs = Get-ProfileArguments
+            Invoke-Compose ($composeBase + $profileArgs + @('--profile', 'interfaz', 'up', '-d', '--build', 'interfaz'))
+            Write-Host 'Interfaz: http://localhost:8090' -ForegroundColor Green
         }
     }
 }
