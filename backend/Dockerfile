@@ -41,7 +41,7 @@ RUN set -eux; \
     printf '\nInclude conf/extra/backend.conf\n' >> "$conf"
 
 WORKDIR /app
-COPY app.py healthcheck.py /app/
+COPY app.py healthcheck.py identidad.py /app/
 COPY backend.conf /usr/local/apache2/conf/extra/backend.conf
 COPY entrypoint.sh /usr/local/bin/backend-entrypoint.sh
 RUN chmod 0755 /usr/local/bin/backend-entrypoint.sh \

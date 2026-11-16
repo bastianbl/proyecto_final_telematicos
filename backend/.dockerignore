@@ -4,3 +4,4 @@
 !healthcheck.py
 !backend.conf
 !entrypoint.sh
+!identidad.py
