@@ -84,8 +84,11 @@
 
     <section class="panel">
       <h2>Métricas del balanceador en vivo</h2>
-      <p class="hint">Fuente: <code id="st-fuente">/server-status?auto</code> del balanceador elegido, cada 2 s. Incluye las consultas del propio panel.
-        Detalle por miembro: <a href="http://localhost:8080/balancer-manager" target="_blank" rel="noopener">balancer-manager del balanceador principal (:8080)</a>.</p>
+      <p class="hint">
+        Fuente: <code id="st-fuente">/server-status?auto</code>
+        del balanceador elegido, con actualización cada 2 segundos.
+        El panel administrativo de Apache está restringido por seguridad.
+      </p>
       <div class="summary" id="estado-lb">
         <div><span class="k">Peticiones totales</span><span class="v" id="m-total">–</span></div>
         <div><span class="k">Peticiones/s (ahora)</span><span class="v" id="m-rps">–</span></div>

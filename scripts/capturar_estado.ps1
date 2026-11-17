@@ -25,7 +25,6 @@ New-Item -ItemType Directory -Force $dir | Out-Null
 
 $fallos = 0
 foreach ($p in @(
-        @('/balancer-manager', 'balancer-manager.html'),
         @('/server-status?auto', 'server-status.txt'),
         @('/server-status', 'server-status.html'))) {
     try {
@@ -35,6 +34,26 @@ foreach ($p in @(
     catch {
         $fallos++
         Write-Host ("  FALLO {0}: {1}" -f $p[0], $_.Exception.Message) -ForegroundColor Red
+    }
+}
+# Comprobar que el panel administrativo no sea accesible desde el host.
+try {
+    $respuesta = Invoke-WebRequest -Uri "$base/balancer-manager" -UseBasicParsing -TimeoutSec 10
+    $fallos++
+    Write-Host "  FALLO /balancer-manager: HTTP $($respuesta.StatusCode); se esperaba 403" -ForegroundColor Red
+}
+catch {
+    $codigo = 0
+    if ($_.Exception.Response) {
+        $codigo = [int]$_.Exception.Response.StatusCode
+    }
+
+    if ($codigo -eq 403) {
+        Write-Host "  OK   /balancer-manager restringido (HTTP 403)" -ForegroundColor Green
+    }
+    else {
+        $fallos++
+        Write-Host "  FALLO /balancer-manager: HTTP $codigo; se esperaba 403" -ForegroundColor Red
     }
 }
 Write-Host "Captura guardada en: $dir"
