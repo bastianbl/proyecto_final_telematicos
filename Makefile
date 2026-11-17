@@ -53,7 +53,8 @@ demo: up verificar
 	@echo "Sistema listo:"
 	@echo "  Interfaz:          http://localhost:8090   (botón Principal)"
 	@echo "  Balanceador:       $(URL)/"
-	@echo "  Estado de Apache:  $(URL)/balancer-manager   $(URL)/server-status"
+	@echo "  Estado de Apache:  $(URL)/server-status"
+	@echo "  Panel administrativo: restringido (HTTP 403)"
 	@echo "Siguiente: make carga CARGA=carga100  (mírala en vivo en la interfaz)"
 
 # Interfaz con balanceadores de demostración 3/5/7 (interfaz/compose.interfaz.yml).
@@ -74,7 +75,9 @@ verificar:
 	$(DC) $(TODOS) ps
 	@curl -fsS "$(URL)/health" && echo
 	@curl -fsS -o /dev/null -w "server-status:    HTTP %{http_code}\n" "$(URL)/server-status?auto"
-	@curl -fsS -o /dev/null -w "balancer-manager: HTTP %{http_code}\n" "$(URL)/balancer-manager"
+	@codigo=$$(curl -s -o /dev/null -w '%{http_code}' "$(URL)/balancer-manager"); \
+	echo "balancer-manager: HTTP $$codigo (esperado 403)"; \
+	test "$$codigo" = "403"
 	bash backend/probar.sh $(N_PET) "$(URL)/"
 
 # Modo --scale (requisito literal del enunciado). Apache lee su lista de
@@ -114,8 +117,10 @@ caida:
 	bash backend/probar.sh $(N_PET) "$(URL)/"
 
 estado:
-	@d="evidencias/logs/estado_$(ETIQUETA)_$(FECHA)"; mkdir -p "$$d"; \
-	curl -fsS "$(URL)/balancer-manager"   -o "$$d/balancer-manager.html" && \
-	curl -fsS "$(URL)/server-status?auto" -o "$$d/server-status.txt" && \
-	curl -fsS "$(URL)/server-status"      -o "$$d/server-status.html" && \
+	@set -e; d="evidencias/logs/estado_$(ETIQUETA)_$(FECHA)"; mkdir -p "$$d"; \
+	curl -fsS "$(URL)/server-status?auto" -o "$$d/server-status.txt"; \
+	curl -fsS "$(URL)/server-status" -o "$$d/server-status.html"; \
+	codigo=$$(curl -s -o /dev/null -w '%{http_code}' "$(URL)/balancer-manager"); \
+	echo "balancer-manager: HTTP $$codigo (esperado 403)"; \
+	test "$$codigo" = "403"; \
 	echo "Captura guardada en $$d"

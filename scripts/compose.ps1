@@ -42,8 +42,8 @@ if ([string]::IsNullOrWhiteSpace($BalancerMethod)) {
     if (-not $BalancerMethod) { $BalancerMethod = $fileSettings['BALANCER_METHOD'] }
     if (-not $BalancerMethod) { $BalancerMethod = 'byrequests' }
 }
-if ($BalancerMethod -notin @('byrequests', 'bybusyness')) {
-    throw "BALANCER_METHOD debe ser byrequests o bybusyness (actual: $BalancerMethod)."
+if ($BalancerMethod -notin @('byrequests', 'bybusyness', 'bytraffic')) {
+    throw "BALANCER_METHOD debe ser byrequests, bybusyness o bytraffic (actual: $BalancerMethod)."
 }
 
 function Invoke-Compose {

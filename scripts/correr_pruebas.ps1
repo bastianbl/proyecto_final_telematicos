@@ -9,7 +9,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)][ValidateSet(3, 5, 7)][int]$BackendCount,
-    [Parameter(Mandatory)][ValidateSet('byrequests', 'bybusyness')][string]$BalancerMethod,
+    [Parameter(Mandatory)][ValidateSet('byrequests', 'bybusyness', 'bytraffic')][string]$BalancerMethod,
     [int[]]$Cargas = @(50, 100, 500, 1000),
     [ValidateSet('carga', 'caida')][string]$Escenario = 'carga',
     [int]$PausaSegundos = 15,
