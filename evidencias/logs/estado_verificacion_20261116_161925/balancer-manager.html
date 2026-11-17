@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><title>Balancer Manager</title>
+<style type='text/css'>
+table {
+ border-width: 1px;
+ border-spacing: 3px;
+ border-style: solid;
+ border-color: gray;
+ border-collapse: collapse;
+ background-color: white;
+ text-align: center;
+}
+th {
+ border-width: 1px;
+ padding: 2px;
+ border-style: dotted;
+ border-color: gray;
+ background-color: lightgray;
+ text-align: center;
+}
+td {
+ border-width: 1px;
+ padding: 2px;
+ border-style: dotted;
+ border-color: gray;
+ background-color: white;
+ text-align: center;
+}
+</style>
+</head>
+<body><h1>Load Balancer Manager for localhost</h1>
+
+<dl><dt>Server Version: Apache/2.4.69 (Unix)</dt>
+<dt>Server Built: Nov  5 2026 07:15:08</dt>
+<dt>Balancer changes will NOT be persisted on restart.</dt><dt>Balancers are inherited from main server.</dt><dt>ProxyPass settings are inherited from main server.</dt></dl>
+<hr />
+<h3>LoadBalancer Status for <a href="/balancer-manager?b=webcluster&amp;nonce=77ad15bc-40b6-4cdb-c052-0d8100bb6563">balancer://webcluster</a> [p8df6fda7_webcluster]</h3>
+
+
+<table><tr><th>MaxMembers</th><th>StickySession</th><th>DisableFailover</th><th>Timeout</th><th>FailoverAttempts</th><th>Method</th><th>Path</th><th>Active</th></tr>
+<tr><td>3 [3 Used]</td>
+<td> (None) </td><td>Off</td>
+<td>0</td><td>2</td>
+<td>byrequests</td>
+<td>/</td>
+<td>Yes</td>
+</tr>
+</table>
+<br />
+
+<table><tr><th>Worker URL</th><th>Route</th><th>RouteRedir</th><th>Factor</th><th>Set</th><th>Status</th><th>Elected</th><th>Busy</th><th>Load</th><th>To</th><th>From</th><th>HC Method</th><th>HC Interval</th><th>Passes</th><th>Fails</th><th>HC uri</th><th>HC Expr</th></tr>
+<tr>
+<td><a href="/balancer-manager?b=webcluster&amp;w=http://backend1&amp;nonce=77ad15bc-40b6-4cdb-c052-0d8100bb6563">http://backend1</a></td><td></td><td></td><td>1.00</td><td>0</td><td>Init Ok </td><td>79</td><td>0</td><td>-200</td><td> 16K</td><td>1.9K</td><td>GET</td><td>2000ms</td><td>1 (0)</td><td>1 (0)</td><td>/health</td><td></td></tr>
+<tr>
+<td><a href="/balancer-manager?b=webcluster&amp;w=http://backend2&amp;nonce=77ad15bc-40b6-4cdb-c052-0d8100bb6563">http://backend2</a></td><td></td><td></td><td>1.00</td><td>0</td><td>Init Ok </td><td>57</td><td>0</td><td>100</td><td> 11K</td><td>1.3K</td><td>GET</td><td>2000ms</td><td>1 (0)</td><td>1 (0)</td><td>/health</td><td></td></tr>
+<tr>
+<td><a href="/balancer-manager?b=webcluster&amp;w=http://backend3&amp;nonce=77ad15bc-40b6-4cdb-c052-0d8100bb6563">http://backend3</a></td><td></td><td></td><td>1.00</td><td>0</td><td>Init Ok </td><td>78</td><td>0</td><td>100</td><td> 15K</td><td>1.8K</td><td>GET</td><td>2000ms</td><td>1 (0)</td><td>1 (0)</td><td>/health</td><td></td></tr>
+</table>
+<hr />
+</body></html>

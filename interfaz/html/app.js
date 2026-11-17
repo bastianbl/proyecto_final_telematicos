@@ -10,6 +10,12 @@ const $ = (id) => document.getElementById(id);
 // (21 -> 7 c/u, 35 -> 7 c/u, 70 -> 10 c/u).
 const PETICIONES = { 3: 21, 5: 35, 7: 70 };
 const st = {
+  // 'principal' = el balanceador del proyecto (:8080), el MISMO que usan
+  // Artillery, verificar.ps1 y los demás scripts. 3/5/7 = balanceadores de
+  // demostración (solo si se levantó interfaz/compose.interfaz.yml).
+  modo: 'principal',
+  principalCount: 3,   // BACKEND_COUNT del .env
+  demo: false,
   backendCount: 3,
   conteo: {},          // { backend1: n, ... }
   ok: 0, fail: 0, latSuma: 0,
@@ -23,29 +29,43 @@ async function cargarConfig() {
   try {
     const r = await fetch('/panel-config.json', { cache: 'no-store' });
     const c = await r.json();
-    if ([3, 5, 7].includes(c.backendCount)) st.backendCount = c.backendCount;
+    if ([3, 5, 7].includes(c.backendCount)) st.principalCount = c.backendCount;
+    st.demo = c.demo === 1 || c.demo === true;
     $('cfg-metodo').textContent = c.metodo || '?';
   } catch {
     $('cfg-metodo').textContent = '?';
   }
+  // Sin los balanceadores de demostración, solo se ofrece el principal.
+  document.querySelectorAll('.escenario button.demo').forEach((b) => { b.hidden = !st.demo; });
 }
 
-// ---------- Escenario: 3, 5 o 7 backends ----------
-// Cada escenario tiene su propio balanceador (balanceador3/5/7), así que
-// cambiar de escenario es inmediato y no reinicia ningún contenedor.
-function cambiarEscenario(n) {
+// Ruta base del balanceador elegido (nginx la reenvía dentro de la red de Docker).
+function base() {
+  return st.modo === 'principal' ? '/api' : `/lb/${st.backendCount}`;
+}
+function nombreLb() {
+  return st.modo === 'principal' ? 'balanceador principal (:8080)' : `balanceador${st.backendCount} (demo)`;
+}
+
+// ---------- Balanceador: principal o demostración 3/5/7 ----------
+// Los de demostración tienen exactamente 3, 5 o 7 miembros, así que cambiar
+// entre ellos es inmediato y no reinicia ningún contenedor.
+function cambiarEscenario(modo) {
   if (st.ocupado) return;
   st.continuo = false;
   const bc = $('btn-continuo');
   bc.classList.remove('active');
   bc.textContent = 'Modo continuo';
 
+  st.modo = modo;
+  const n = modo === 'principal' ? st.principalCount : Number(modo);
   st.backendCount = n;
   document.querySelectorAll('.escenario button').forEach((b) => {
-    b.classList.toggle('sel', Number(b.dataset.n) === n);
+    b.classList.toggle('sel', b.dataset.n === String(modo));
   });
-  $('lb-nombre').textContent = `balanceador${n}`;
-  $('cantidad').value = String(PETICIONES[n]);
+  $('lb-nombre').textContent = nombreLb();
+  $('cfg-count').textContent = String(n);
+  $('cantidad').value = String(PETICIONES[n] || n * 7);
 
   // Tarjetas: exactamente n.
   $('tarjetas').textContent = '';
@@ -56,6 +76,10 @@ function cambiarEscenario(n) {
   $('barras').textContent = '';
   reiniciarConteo();
   consultarBalanceador();
+
+  // Resultados: mostrar el mismo número de backends.
+  $('r-backends').value = String(n);
+  if (RES.filas.length) pintarResultados();
 }
 
 // ---------- Peticiones a través del balanceador ----------
@@ -63,7 +87,7 @@ function urlPeticion() {
   const ruta = $('ruta').value;
   const delay = $('delay').value.trim();
   const q = ruta === '/work' && delay !== '' ? `?delay_ms=${encodeURIComponent(delay)}` : '';
-  return `/lb/${st.backendCount}${ruta}${q}`;
+  return `${base()}${ruta}${q}`;
 }
 
 async function unaPeticion(url) {
@@ -122,6 +146,7 @@ function registrar(texto, ms, error) {
 function pintarResumen() {
   $('s-ok').textContent = String(st.ok);
   $('s-fail').textContent = String(st.fail);
+  $('m-fallos').textContent = String(st.fail);
   $('s-lat').textContent = st.ok ? `${Math.round(st.latSuma / st.ok)} ms` : '–';
   pintarBarras();
 }
@@ -245,19 +270,243 @@ async function consultarBackend(i) {
 
 async function consultarBalanceador() {
   const chip = $('chip-lb');
-  const n = st.backendCount;
+  const nombre = nombreLb();
   try {
-    const r = await fetch(`/lb/${n}/health`, { cache: 'no-store' });
+    const r = await fetch(`${base()}/health`, { cache: 'no-store' });
     chip.querySelector('.dot').className = r.ok ? 'dot ok' : 'dot bad';
-    $('lb-text').textContent = r.ok ? `balanceador${n}: en línea` : `balanceador${n}: HTTP ${r.status}`;
+    $('lb-text').textContent = r.ok ? `${nombre}: en línea` : `${nombre}: HTTP ${r.status}`;
   } catch {
     chip.querySelector('.dot').className = 'dot bad';
-    $('lb-text').textContent = `balanceador${n}: sin respuesta`;
+    $('lb-text').textContent = `${nombre}: sin respuesta`;
+  }
+}
+
+// ---------- Métricas en vivo del balanceador: /server-status?auto ----------
+// Formato "Clave: valor" por línea. Peticiones/s "ahora" = diferencia de
+// "Total Accesses" entre dos consultas / tiempo transcurrido.
+const previo = { n: '', total: 0, t: 0 };
+
+async function consultarEstadoLb() {
+  const n = base();   // identifica al balanceador consultado
+  $('st-fuente').textContent = `/server-status?auto del ${nombreLb()}`;
+  try {
+    const r = await fetch(`${n}/server-status?auto`, { cache: 'no-store' });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const m = {};
+    (await r.text()).split('\n').forEach((l) => {
+      const i = l.indexOf(':');
+      if (i > 0) m[l.slice(0, i).trim()] = l.slice(i + 1).trim();
+    });
+    const total = Number(m['Total Accesses'] || 0);
+    const ahora = performance.now();
+    if (previo.n === n && previo.t && total >= previo.total) {
+      const rps = (total - previo.total) / ((ahora - previo.t) / 1000);
+      $('m-rps').textContent = rps.toFixed(1);
+    } else {
+      $('m-rps').textContent = '…';
+    }
+    Object.assign(previo, { n, total, t: ahora });
+    $('m-total').textContent = String(total);
+    $('m-dur').textContent = m.DurationPerReq ? `${Number(m.DurationPerReq).toFixed(1)} ms` : '–';
+    $('m-kb').textContent = m['Total kBytes'] ? `${m['Total kBytes']} kB` : '–';
+    $('m-workers').textContent = `${m.BusyWorkers ?? '–'} / ${m.IdleWorkers ?? '–'}`;
+    $('m-uptime').textContent = m.Uptime ? duracion(Number(m.Uptime)) : '–';
+  } catch (e) {
+    ['m-total', 'm-rps', 'm-dur', 'm-kb', 'm-workers', 'm-uptime'].forEach((id) => { $(id).textContent = '–'; });
+    $('st-fuente').textContent = `/server-status?auto del ${nombreLb()} (sin respuesta: ${e.message})`;
+  }
+}
+
+// ---------- Resultados de las pruebas (solo lectura) ----------
+const RES = { filas: [] };
+const SERIES = [['byrequests', '#2563eb'], ['bybusyness', '#ea580c']];
+
+function leerCSV(texto) {
+  const lineas = texto.replace(/^﻿/, '').split(/\r?\n/).filter((l) => l.trim());
+  const cab = lineas.shift().split(',').map((c) => c.trim());
+  return lineas.map((l) => {
+    const v = l.split(',');
+    const o = {};
+    cab.forEach((c, i) => { o[c] = (v[i] || '').trim(); });
+    return o;
+  });
+}
+
+function svg(tag, attrs, texto) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, String(v)));
+  if (texto !== undefined) el.textContent = texto;
+  return el;
+}
+
+function pintarGrafica() {
+  const nb = $('r-backends').value;
+  const met = $('r-metrica').value;
+  const etiqueta = $('r-metrica').selectedOptions[0].textContent;
+  const filas = RES.filas.filter((f) => f.backends === nb);
+  const cont = $('r-grafica');
+  cont.textContent = '';
+  if (!filas.length) { cont.textContent = 'Sin datos para este escenario.'; return; }
+
+  const usuarios = [...new Set(filas.map((f) => Number(f.usuarios)))].sort((a, b) => a - b);
+  const valor = (alg, u) => {
+    const f = filas.find((x) => x.algoritmo === alg && Number(x.usuarios) === u);
+    return f ? Number(f[met]) : null;
+  };
+  const max = Math.max(1, ...filas.map((f) => Number(f[met]) || 0)) * 1.15;
+
+  const ley = document.createElement('div');
+  ley.className = 'leyenda';
+  SERIES.forEach(([alg, color]) => {
+    const s = document.createElement('span');
+    s.style.setProperty('--c', color);
+    s.textContent = alg;
+    ley.append(s);
+  });
+  const t = document.createElement('span');
+  t.textContent = `${etiqueta} · ${nb} backends`;
+  ley.append(t);
+  cont.append(ley);
+
+  const W = 640, H = 260, M = { l: 50, r: 10, t: 10, b: 40 };
+  const g = svg('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `${etiqueta} por usuarios` });
+  const ancho = (W - M.l - M.r) / usuarios.length;
+  const y = (v) => M.t + (H - M.t - M.b) * (1 - v / max);
+  for (let k = 0; k <= 4; k++) {
+    const v = (max / 4) * k;
+    g.append(svg('line', { x1: M.l, x2: W - M.r, y1: y(v), y2: y(v), class: 'eje' }));
+    g.append(svg('text', { x: M.l - 6, y: y(v) + 4, 'text-anchor': 'end' }, v.toFixed(v < 10 ? 1 : 0)));
+  }
+  usuarios.forEach((u, i) => {
+    const x0 = M.l + i * ancho;
+    const bw = ancho * 0.32;
+    SERIES.forEach(([alg, color], j) => {
+      const v = valor(alg, u);
+      if (v === null || Number.isNaN(v)) return;
+      const x = x0 + ancho * 0.16 + j * (bw + 4);
+      g.append(svg('rect', { x, y: y(v), width: bw, height: Math.max(0, H - M.b - y(v)), fill: color, rx: 2 }));
+      g.append(svg('text', { x: x + bw / 2, y: y(v) - 4, 'text-anchor': 'middle', class: 'valor' }, String(v)));
+    });
+    g.append(svg('text', { x: x0 + ancho / 2, y: H - M.b + 18, 'text-anchor': 'middle' }, `${u} usuarios`));
+  });
+  cont.append(g);
+}
+
+function pintarTabla(tabla, columnas, filas, claseFila) {
+  tabla.textContent = '';
+  const tr = document.createElement('tr');
+  columnas.forEach(([, titulo]) => {
+    const th = document.createElement('th');
+    th.textContent = titulo;
+    tr.append(th);
+  });
+  tabla.append(tr);
+  filas.forEach((f) => {
+    const fila = document.createElement('tr');
+    if (claseFila) fila.className = claseFila(f);
+    columnas.forEach(([clave]) => {
+      const td = document.createElement('td');
+      td.textContent = f[clave] === undefined || f[clave] === '' ? '–' : String(f[clave]);
+      fila.append(td);
+    });
+    tabla.append(fila);
+  });
+}
+
+function pintarResultados() {
+  pintarGrafica();
+  const nb = $('r-backends').value;
+  const filas = RES.filas.filter((f) => f.backends === nb)
+    .sort((a, b) => a.algoritmo.localeCompare(b.algoritmo) || a.usuarios - b.usuarios);
+  pintarTabla($('r-tabla'), [
+    ['algoritmo', 'Algoritmo'], ['usuarios', 'Usuarios'], ['peticiones', 'Peticiones'],
+    ['errores', 'Errores'], ['rps', 'Pet./s'], ['lat_media', 'Media ms'], ['p95', 'p95 ms'],
+    ['p99', 'p99 ms'], ['desv_reparto_pct', 'Desv. reparto %'], ['sospechosa', 'Sospechosa'],
+  ], filas, (f) => (f.sospechosa === 'SI' ? 'sospechosa' : ''));
+}
+
+async function listar(ruta) {
+  const r = await fetch(ruta, { cache: 'no-store' });
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();   // listado de nginx (autoindex_format json)
+}
+
+async function cargarResultados() {
+  try {
+    const r = await fetch('/datos/metricas/datos/metricas_limpias.csv', { cache: 'no-store' });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    RES.filas = leerCSV(await r.text());
+    pintarResultados();
+  } catch (e) {
+    $('r-grafica').textContent = `No se pudieron leer los resultados (${e.message}). ¿Se levantó la interfaz con interfaz/compose.interfaz.yml?`;
+  }
+
+  const gal = $('r-galeria');
+  try {
+    const pngs = (await listar('/datos/metricas/graficas/')).filter((f) => /\.png$/i.test(f.name));
+    gal.textContent = pngs.length ? '' : 'Sin gráficas.';
+    pngs.forEach((f) => {
+      const fig = document.createElement('figure');
+      const a = document.createElement('a');
+      a.href = `/datos/metricas/graficas/${encodeURIComponent(f.name)}`;
+      a.target = '_blank';
+      const img = document.createElement('img');
+      img.src = a.href;
+      img.alt = f.name;
+      img.loading = 'lazy';
+      a.append(img);
+      const cap = document.createElement('figcaption');
+      cap.textContent = f.name;
+      fig.append(a, cap);
+      gal.append(fig);
+    });
+  } catch { gal.textContent = 'Sin gráficas.'; }
+
+  try {
+    const r = await fetch('/datos/metricas/ANALISIS.md', { cache: 'no-store' });
+    $('r-analisis').textContent = r.ok ? await r.text() : 'No disponible.';
+  } catch { $('r-analisis').textContent = 'No disponible.'; }
+
+  // Corridas nuevas de "make carga" / "make concurrencia": se leen los JSON de Artillery.
+  const tabla = $('r-nuevas');
+  try {
+    const jsons = (await listar('/datos/resultados/make/'))
+      .filter((f) => /\.json$/i.test(f.name))
+      .sort((a, b) => b.mtime.localeCompare(a.mtime)).slice(0, 15);
+    const filas = await Promise.all(jsons.map(async (f) => {
+      const d = await (await fetch(`/datos/resultados/make/${encodeURIComponent(f.name)}`)).json();
+      const c = d.aggregate?.counters || {};
+      const s = d.aggregate?.summaries || {};
+      const rt = s['http.response_time'] || {};
+      const pet = c['http.requests'] || 0;
+      const reparto = Object.keys(c).filter((k) => k.startsWith('backend.')).sort()
+        .map((k) => `${k.slice(8)}=${c[k]}`).join(' ');
+      return {
+        nombre: f.name.replace(/\.json$/, ''), peticiones: pet,
+        errores: pet - (c['http.codes.200'] || 0), fallidos: c['vusers.failed'] || 0,
+        media: rt.mean, p95: rt.p95, p99: rt.p99,
+        sesion: s['vusers.session_length']?.mean, reparto,
+      };
+    }));
+    if (!filas.length) throw new Error('vacío');
+    pintarTabla(tabla, [
+      ['nombre', 'Corrida'], ['peticiones', 'Peticiones'], ['errores', 'Errores'],
+      ['fallidos', 'Usuarios fallidos'], ['media', 'Media ms'], ['p95', 'p95 ms'],
+      ['p99', 'p99 ms'], ['sesion', 'Sesión media ms'], ['reparto', 'Reparto'],
+    ], filas);
+  } catch {
+    tabla.textContent = '';
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.textContent = 'Aún no hay corridas nuevas (make carga / make concurrencia).';
+    tr.append(td);
+    tabla.append(tr);
   }
 }
 
 async function ciclo() {
   await Promise.all([
+    consultarEstadoLb(),
     consultarBalanceador(),
     ...Object.keys(st.tarjetas).map((i) => consultarBackend(Number(i))),
   ]);
@@ -298,12 +547,16 @@ function reiniciarConteo() {
 $('btn-reset').addEventListener('click', reiniciarConteo);
 
 document.querySelectorAll('.escenario button').forEach((b) => {
-  b.addEventListener('click', () => cambiarEscenario(Number(b.dataset.n)));
+  b.addEventListener('click', () => cambiarEscenario(b.dataset.n === 'principal' ? 'principal' : Number(b.dataset.n)));
 });
+
+$('r-backends').addEventListener('change', pintarResultados);
+$('r-metrica').addEventListener('change', pintarGrafica);
 
 // ---------- Inicio ----------
 (async () => {
   await cargarConfig();
-  cambiarEscenario(st.backendCount);
+  cambiarEscenario('principal');
   ciclo();
+  cargarResultados();
 })();

@@ -25,7 +25,7 @@
 
 7. Cualquier cambio en `BACKEND_COUNT` o `BALANCER_METHOD` requiere recrear el contenedor `balanceador`, ya que el archivo `balancer-members.conf` se genera automáticamente al iniciar Apache.
 
-8. Los endpoints administrativos `balancer-manager` y `server-status` permanecen restringidos mediante `Require local`. No deben exponerse públicamente ni habilitarse sin definir previamente mecanismos de seguridad.
+8. Los endpoints administrativos `balancer-manager` y `server-status` permanecen restringidos mediante `Require local`. No deben exponerse públicamente ni habilitarse sin definir previamente mecanismos de seguridad. **Actualización (16/11/2026):** para cumplir el enunciado (capturar estadísticas desde el endpoint de estado), ahora se permiten `127.0.0.1`, `172.16.0.0/12` y `192.168.65.0/24` (`Require ip`), y responden 200 desde el equipo local. Siguen sin ser accesibles desde otras máquinas porque el puerto solo se publica en `127.0.0.1`. Ver la sección 6.
 
 9. Los archivos `compose.test.yml` y la carpeta `test-fixtures/` pertenecen exclusivamente al **laboratorio autónomo del integrante 1**. Su finalidad es validar Apache utilizando backends temporales. No reemplazan el archivo `docker-compose.yml` principal ni los backends oficiales desarrollados por el integrante 2.
 
@@ -165,3 +165,16 @@ Los integrantes 1, 2 y 3 deben confirmar los siguientes acuerdos:
 - Compatibilidad del balanceador con las funcionalidades que desarrolle el integrante 2.
 
 **El objetivo de este contrato es permitir que todos los componentes se integren sin modificar innecesariamente el trabajo de otros integrantes y garantizar que el proyecto pueda ejecutarse desde un despliegue limpio.**
+
+## 6. Cambios añadidos el 16 de noviembre de 2026 (requisitos del enunciado)
+
+Cambios mínimos para cumplir el enunciado; el comportamiento por defecto no cambia.
+
+- **Endpoint de estado accesible (`balancer.conf`).** `/balancer-manager` y `/server-status` pasan de `Require local` a `Require ip 127.0.0.1 172.16.0.0/12 192.168.65.0/24`, con `ExtendedStatus On`. Se consultan desde el host en `http://localhost:8080/balancer-manager` y `http://localhost:8080/server-status?auto`. El puerto solo se publica en `127.0.0.1`, así que siguen sin ser accesibles desde otras máquinas. `balancer-manager` también permite modificar el balanceador; no debe publicarse fuera del equipo local.
+- **Modo `--scale` (`entrypoint.sh`).** Nueva variable `BACKEND_MODE`:
+  - `fijo` (por defecto): genera exactamente los mismos `BalancerMember` que antes (`backend1..N`, N = 3, 5 o 7).
+  - `scale`: genera un miembro por réplica del servicio `backend` creado con `docker compose up --scale backend=N`, con los nombres de Compose (`proyecto-telematicos-backend-1..N`, N de 1 a 20).
+
+  Apache lee esta lista al arrancar, así que tras escalar hay que recrear el balanceador (`make scale N=...` lo hace).
+- **Logs en volumen.** `docker-compose.yml` monta `./logs/balanceador` en `/usr/local/apache2/logs`; `balanceo_detallado.log` persiste en el host.
+- **Healthcheck del balanceador** en `docker-compose.yml`: `bash` + `/dev/tcp` pide `/server-status?auto` y exige `200`.

@@ -74,6 +74,16 @@ porque `/work` puede gastar hasta `WORK_MAX_MS` de CPU más `WORK_MAX_MS` de
 espera. El balanceador corta a los 10 s (`ProxyTimeout 10`), así que en la
 práctica no tiene sentido pedir más de unos 10 s por petición.
 
+### Modo `--scale`
+
+Además de `backend1` … `backend7`, el compose tiene un servicio `backend` (perfil
+`scale`) que se puede replicar con `docker compose up --scale backend=N`. Las réplicas
+no reciben `BACKEND_ID`. El entrypoint lo deduce consultando el DNS inverso de su
+propia IP: el DNS interno de Docker responde `proyecto-telematicos-backend-3…`, y de ahí
+sale el número 3. Así cada réplica sigue respondiendo `backendN` y Artillery, los
+scripts y la interfaz pueden contar el reparto igual que en el modo normal. Uso:
+`make scale N=4` (ver el README raíz).
+
 ## Endpoints
 
 | Endpoint | Respuesta | Uso |

@@ -1,0 +1,420 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<title>Apache Status</title>
+</head><body>
+<h1>Apache Server Status for localhost (via 172.18.0.5)</h1>
+
+<dl><dt>Server Version: Apache/2.4.69 (Unix)</dt>
+<dt>Server MPM: event</dt>
+<dt>Server Built: Nov  5 2026 07:15:08
+</dt></dl><hr /><dl>
+<dt>Current Time: Monday, 16-Nov-2026 20:55:51 UTC</dt>
+<dt>Restart Time: Monday, 16-Nov-2026 20:55:07 UTC</dt>
+<dt>Parent Server Config. Generation: 1</dt>
+<dt>Parent Server MPM Generation: 0</dt>
+<dt>Server uptime:  43 seconds</dt>
+<dt>Server load: 1.96 2.08 1.64</dt>
+<dt>Total accesses: 110 - Total Traffic: 22 kB - Total Duration: 2932</dt>
+<dt>CPU Usage: u.1 s.14 cu0 cs0 - .558% CPU load</dt>
+<dt>2.56 requests/sec - 523 B/second - 204 B/request - 26.6545 ms/request</dt>
+<dt>1 requests currently being processed, 0 workers gracefully restarting, 99 idle workers</dt>
+</dl>
+
+<table rules="all" cellpadding="1%">
+<tr><th rowspan="2">Slot</th><th rowspan="2">PID</th><th rowspan="2">Stopping</th><th colspan="2">Connections</th>
+<th colspan="3">Threads</th><th colspan="4">Async connections</th></tr>
+<tr><th>total</th><th>accepting</th><th>busy</th><th>graceful</th><th>idle</th><th>wait-io</th><th>writing</th><th>keep-alive</th><th>closing</th></tr>
+<tr><td>0</td><td>8</td><td>no</td><td>0</td><td>yes</td><td>0</td><td>0</td><td>25</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>1</td><td>9</td><td>no</td><td>0</td><td>yes</td><td>0</td><td>0</td><td>25</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>2</td><td>11</td><td>no</td><td>1</td><td>yes</td><td>0</td><td>0</td><td>25</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>3</td><td>134</td><td>no</td><td>1</td><td>yes</td><td>1</td><td>0</td><td>24</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>Sum</td><td>4</td><td>0</td><td>2</td><td>&nbsp;</td><td>1</td><td>0</td><td>99</td><td>0</td><td>0</td><td>2</td><td>0</td></tr>
+</table>
+<pre>________________________________________________________________
+___________________________________W............................
+................................................................
+................................................................
+................................................................
+................................................................
+................</pre>
+<p>Scoreboard Key:<br />
+"<b><code>_</code></b>" Waiting for Connection, 
+"<b><code>S</code></b>" Starting up, 
+"<b><code>R</code></b>" Reading Request,<br />
+"<b><code>W</code></b>" Sending Reply, 
+"<b><code>K</code></b>" Keepalive (read), 
+"<b><code>D</code></b>" DNS Lookup,<br />
+"<b><code>C</code></b>" Closing connection, 
+"<b><code>L</code></b>" Logging, 
+"<b><code>G</code></b>" Gracefully finishing,<br /> 
+"<b><code>I</code></b>" Idle cleanup of worker, 
+"<b><code>.</code></b>" Open slot with no current process<br />
+</p>
+
+
+<table border="0"><tr><th>Srv</th><th>PID</th><th>Acc</th><th>M</th><th>CPU
+</th><th>SS</th><th>Req</th><th>Dur</th><th>Conn</th><th>Child</th><th>Slot</th><th>Client</th><th>Protocol</th><th>VHost</th><th>Request</th></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/2/2</td><td>_
+</td><td>0.05</td><td>16</td><td>1</td><td>2</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>16</td><td>41</td><td>41</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/2/2</td><td>_
+</td><td>0.05</td><td>16</td><td>1</td><td>2</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>16</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/2/2</td><td>_
+</td><td>0.05</td><td>16</td><td>42</td><td>44</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>16</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/2/2</td><td>_
+</td><td>0.06</td><td>16</td><td>1</td><td>3</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/1/1</td><td>_
+</td><td>0.02</td><td>15</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/1/1</td><td>_
+</td><td>0.02</td><td>16</td><td>42</td><td>42</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/2/2</td><td>_
+</td><td>0.06</td><td>15</td><td>1</td><td>2</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/1/1</td><td>_
+</td><td>0.02</td><td>15</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/2/2</td><td>_
+</td><td>0.06</td><td>15</td><td>1</td><td>2</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/2/2</td><td>_
+</td><td>0.07</td><td>10</td><td>202</td><td>204</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.14</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET /work HTTP/1.1</td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/2/2</td><td>_
+</td><td>0.07</td><td>8</td><td>0</td><td>42</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>127.0.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET /server-status?auto HTTP/1.0</td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>8</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/1/1</td><td>_
+</td><td>0.04</td><td>6</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.14</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/2/2</td><td>_
+</td><td>0.08</td><td>4</td><td>201</td><td>203</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.14</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET /work HTTP/1.1</td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/1/1</td><td>_
+</td><td>0.04</td><td>0</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.14</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>25</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/1/1</td><td>_
+</td><td>0.04</td><td>25</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>25</td><td>41</td><td>41</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/1/1</td><td>_
+</td><td>0.04</td><td>25</td><td>42</td><td>42</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>25</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/1/1</td><td>_
+</td><td>0.05</td><td>18</td><td>0</td><td>0</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>127.0.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET /server-status?auto HTTP/1.0</td></tr>
+
+<tr><td><b>0-0</b></td><td>8</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>18</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/2/2</td><td>_
+</td><td>0.03</td><td>0</td><td>0</td><td>0</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET /balancer-manager HTTP/1.1</td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/1/1</td><td>_
+</td><td>0.00</td><td>25</td><td>2</td><td>2</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>0</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/1/1</td><td>_
+</td><td>0.00</td><td>25</td><td>2</td><td>2</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/1/1</td><td>_
+</td><td>0.02</td><td>25</td><td>42</td><td>42</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/1/1</td><td>_
+</td><td>0.02</td><td>25</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/1/1</td><td>_
+</td><td>0.00</td><td>24</td><td>3</td><td>3</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/1/1</td><td>_
+</td><td>0.02</td><td>24</td><td>41</td><td>41</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/1/1</td><td>_
+</td><td>0.00</td><td>24</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/1/1</td><td>_
+</td><td>0.02</td><td>24</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/1/1</td><td>_
+</td><td>0.02</td><td>24</td><td>41</td><td>41</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/1/1</td><td>_
+</td><td>0.00</td><td>24</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/1/1</td><td>_
+</td><td>0.00</td><td>24</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/1/1</td><td>_
+</td><td>0.02</td><td>24</td><td>41</td><td>41</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/1/1</td><td>_
+</td><td>0.00</td><td>24</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/1/1</td><td>_
+</td><td>0.02</td><td>16</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/1/1</td><td>_
+</td><td>0.00</td><td>16</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/1/1</td><td>_
+</td><td>0.02</td><td>16</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>16</td><td>41</td><td>41</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/1/1</td><td>_
+</td><td>0.03</td><td>16</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/1/1</td><td>_
+</td><td>0.03</td><td>9</td><td>202</td><td>202</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.14</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET /work HTTP/1.1</td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>16</td><td>0</td><td>0</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/2/2</td><td>_
+</td><td>0.03</td><td>6</td><td>201</td><td>203</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.14</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET /work HTTP/1.1</td></tr>
+
+<tr><td><b>1-0</b></td><td>9</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>2</td><td>42</td><td>42</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.14</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/2/2</td><td>_
+</td><td>0.02</td><td>0</td><td>1</td><td>2</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.14</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>24</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/2/2</td><td>_
+</td><td>0.03</td><td>24</td><td>42</td><td>42</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>24</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/2/2</td><td>_
+</td><td>0.03</td><td>24</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>24</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/2/2</td><td>_
+</td><td>0.03</td><td>23</td><td>0</td><td>2</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>127.0.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET /server-status?auto HTTP/1.0</td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>23</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>16</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/2/2</td><td>_
+</td><td>0.03</td><td>16</td><td>1</td><td>3</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/2/2</td><td>_
+</td><td>0.03</td><td>16</td><td>1</td><td>44</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>16</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/2/2</td><td>_
+</td><td>0.03</td><td>16</td><td>1</td><td>2</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>16</td><td>0</td><td>0</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/2/2</td><td>_
+</td><td>0.03</td><td>16</td><td>1</td><td>43</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/1/1</td><td>_
+</td><td>0.02</td><td>16</td><td>2</td><td>2</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/2/2</td><td>_
+</td><td>0.03</td><td>16</td><td>1</td><td>2</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/1/1</td><td>_
+</td><td>0.02</td><td>16</td><td>42</td><td>42</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/2/2</td><td>_
+</td><td>0.04</td><td>15</td><td>1</td><td>2</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/1/1</td><td>_
+</td><td>0.02</td><td>15</td><td>41</td><td>41</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/2/2</td><td>_
+</td><td>0.04</td><td>8</td><td>202</td><td>203</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.14</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET /work HTTP/1.1</td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/2/2</td><td>_
+</td><td>0.04</td><td>5</td><td>202</td><td>244</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.14</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET /work HTTP/1.1</td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>4</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.14</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/2/2</td><td>_
+</td><td>0.04</td><td>2</td><td>201</td><td>203</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.14</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET /work HTTP/1.1</td></tr>
+
+<tr><td><b>2-0</b></td><td>11</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>1</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.14</td><td>http/1.1</td><td nowrap></td><td nowrap></td></tr>
+
+<tr><td><b>3-0</b></td><td>134</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>16</td><td>2</td><td>2</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>3-0</b></td><td>134</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>16</td><td>3</td><td>3</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>3-0</b></td><td>134</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>16</td><td>2</td><td>2</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>3-0</b></td><td>134</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>16</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>3-0</b></td><td>134</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>16</td><td>1</td><td>1</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>3-0</b></td><td>134</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>15</td><td>42</td><td>42</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET / HTTP/1.1</td></tr>
+
+<tr><td><b>3-0</b></td><td>134</td><td>0/1/1</td><td>_
+</td><td>0.01</td><td>13</td><td>0</td><td>0</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>127.0.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET /server-status?auto HTTP/1.0</td></tr>
+
+<tr><td><b>3-0</b></td><td>134</td><td>0/1/1</td><td>_
+</td><td>0.02</td><td>7</td><td>202</td><td>202</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.14</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET /work HTTP/1.1</td></tr>
+
+<tr><td><b>3-0</b></td><td>134</td><td>0/1/1</td><td>_
+</td><td>0.02</td><td>3</td><td>201</td><td>201</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.14</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET /work HTTP/1.1</td></tr>
+
+<tr><td><b>3-0</b></td><td>134</td><td>0/1/1</td><td>_
+</td><td>0.02</td><td>3</td><td>0</td><td>0</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>127.0.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET /server-status?auto HTTP/1.0</td></tr>
+
+<tr><td><b>3-0</b></td><td>134</td><td>0/1/1</td><td>_
+</td><td>0.02</td><td>1</td><td>202</td><td>202</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.14</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET /work HTTP/1.1</td></tr>
+
+<tr><td><b>3-0</b></td><td>134</td><td>0/1/1</td><td>_
+</td><td>0.02</td><td>0</td><td>0</td><td>0</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET /server-status?auto HTTP/1.1</td></tr>
+
+<tr><td><b>3-0</b></td><td>134</td><td>1/0/0</td><td><b>W</b>
+</td><td>0.00</td><td>0</td><td>0</td><td>0</td><td>0.0</td><td>0.00</td><td>0.00
+</td><td>172.18.0.1</td><td>http/1.1</td><td nowrap>localhost:80</td><td nowrap>GET /server-status HTTP/1.1</td></tr>
+
+</table>
+ <hr /> <table>
+ <tr><th>Srv</th><td>Child Server number - generation</td></tr>
+ <tr><th>PID</th><td>OS process ID</td></tr>
+ <tr><th>Acc</th><td>Number of accesses this connection / this child / this slot</td></tr>
+ <tr><th>M</th><td>Mode of operation</td></tr>
+<tr><th>CPU</th><td>CPU usage, number of seconds</td></tr>
+<tr><th>SS</th><td>Seconds since beginning of most recent request</td></tr>
+ <tr><th>Req</th><td>Milliseconds required to process most recent request</td></tr>
+ <tr><th>Dur</th><td>Sum of milliseconds required to process all requests</td></tr>
+ <tr><th>Conn</th><td>Kilobytes transferred this connection</td></tr>
+ <tr><th>Child</th><td>Megabytes transferred this child</td></tr>
+ <tr><th>Slot</th><td>Total megabytes transferred this slot</td></tr>
+ </table>
+</body></html>

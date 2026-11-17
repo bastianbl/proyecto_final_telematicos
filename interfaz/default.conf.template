@@ -24,12 +24,22 @@ server {
         try_files $uri $uri/ =404;
     }
 
+    # Resultados de Artillery y metricas (volumenes de solo lectura). El listado
+    # en JSON permite a la pagina descubrir graficas y corridas nuevas.
+    location /datos/ {
+        autoindex on;
+        autoindex_format json;
+        add_header Cache-Control "no-cache" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        limit_except GET { deny all; }
+    }
+
     # Configuracion del escenario, inyectada desde el entorno del contenedor.
     location = /panel-config.json {
         access_log off;
         default_type application/json;
         add_header Cache-Control "no-store" always;
-        return 200 '{"backendCount": ${BACKEND_COUNT}, "metodo": "${BALANCER_METHOD}"}';
+        return 200 '{"backendCount": ${BACKEND_COUNT}, "metodo": "${BALANCER_METHOD}", "demo": ${PANEL_DEMO}}';
     }
 
     # /api/<ruta> -> balanceador:80/<ruta>. Es el camino REAL de un usuario:

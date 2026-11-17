@@ -1,18 +1,18 @@
-# Añade la interfaz grafica al proyecto completo SIN modificar docker-compose.yml.
-# Ejecutar desde la raiz del repositorio:
-#   docker compose -f docker-compose.yml -f interfaz/compose.interfaz.yml up -d --build
-# Abrir http://localhost:8090 y elegir 3, 5 o 7 backends en la cabecera.
+# MODO DEMOSTRACION de la interfaz (opcional). La interfaz normal ya esta en
+# docker-compose.yml (perfil "interfaz") y observa el balanceador principal.
 #
-# Como funciona:
+# Este archivo AÑADE tres balanceadores de demostracion para cambiar entre
+# 3, 5 y 7 backends desde la pagina sin reiniciar nada:
+#   docker compose -f docker-compose.yml -f interfaz/compose.interfaz.yml --profile interfaz up -d --build --wait
+#   (o: make demo-escenarios)
+#
 #  - Los 7 backends quedan siempre encendidos (se anulan sus perfiles).
-#  - Hay tres balanceadores extra con la MISMA imagen del integrante 1:
-#    balanceador3 (backend1-3), balanceador5 (backend1-5), balanceador7 (backend1-7).
-#  - La interfaz envia las peticiones al balanceador que coincide con el numero
-#    elegido, asi cambiar de escenario no exige reiniciar nada.
-#  - El "balanceador" principal (puerto 8080, scripts y Artillery) no cambia.
+#  - balanceador3/5/7: MISMA imagen del integrante 1 con BACKEND_COUNT fijo.
+#  - La pagina muestra los botones "demo 3 / demo 5 / demo 7" ademas de "Principal".
+#  - El "balanceador" principal (:8080, scripts y Artillery) no cambia.
 # Las rutas son relativas al PRIMER archivo (la raiz).
 
-x-balanceador-panel: &balanceador-panel
+x-balanceador-demo: &balanceador-demo
   build:
     context: ./balanceador
     dockerfile: Dockerfile
@@ -32,7 +32,7 @@ services:
     profiles: !reset []
 
   balanceador3:
-    <<: *balanceador-panel
+    <<: *balanceador-demo
     environment:
       BACKEND_COUNT: "3"
       BALANCER_METHOD: "${BALANCER_METHOD:-byrequests}"
@@ -42,7 +42,7 @@ services:
       backend3: { condition: service_healthy }
 
   balanceador5:
-    <<: *balanceador-panel
+    <<: *balanceador-demo
     environment:
       BACKEND_COUNT: "5"
       BALANCER_METHOD: "${BALANCER_METHOD:-byrequests}"
@@ -54,7 +54,7 @@ services:
       backend5: { condition: service_healthy }
 
   balanceador7:
-    <<: *balanceador-panel
+    <<: *balanceador-demo
     environment:
       BACKEND_COUNT: "7"
       BALANCER_METHOD: "${BALANCER_METHOD:-byrequests}"
@@ -67,18 +67,13 @@ services:
       backend6: { condition: service_healthy }
       backend7: { condition: service_healthy }
 
+  # Se suma a la definicion de docker-compose.yml: arranca sin perfil, activa
+  # los botones de demostracion y espera tambien a los balanceadores demo.
   interfaz:
-    build:
-      context: ./interfaz
-    restart: unless-stopped
-    ports:
-      - "127.0.0.1:${PANEL_PORT:-8090}:80"
+    profiles: !reset []
     environment:
-      BACKEND_COUNT: "3"   # escenario que aparece seleccionado al abrir la pagina
-      BALANCER_METHOD: "${BALANCER_METHOD:-byrequests}"
+      PANEL_DEMO: "1"
     depends_on:
       balanceador3: { condition: service_started }
       balanceador5: { condition: service_started }
       balanceador7: { condition: service_started }
-    networks:
-      - red-proyecto

@@ -1,0 +1,37 @@
+localhost
+ServerVersion: Apache/2.4.69 (Unix)
+ServerMPM: event
+Server Built: Nov  5 2026 07:15:08
+CurrentTime: Monday, 16-Nov-2026 21:37:04 UTC
+RestartTime: Monday, 16-Nov-2026 21:36:01 UTC
+ParentServerConfigGeneration: 1
+ParentServerMPMGeneration: 0
+ServerUptimeSeconds: 63
+ServerUptime: 1 minute 3 seconds
+Load1: 1.67
+Load5: 1.30
+Load15: 1.23
+Total Accesses: 161
+Total kBytes: 44
+Total Duration: 1374
+CPUUser: .16
+CPUSystem: .19
+CPUChildrenUser: 0
+CPUChildrenSystem: 0
+CPULoad: .555556
+Uptime: 63
+ReqPerSec: 2.55556
+BytesPerSec: 715.175
+BytesPerReq: 279.851
+DurationPerReq: 8.53416
+BusyWorkers: 1
+GracefulWorkers: 0
+IdleWorkers: 99
+Processes: 4
+Stopping: 0
+ConnsTotal: 0
+ConnsAsyncWaitIO: 0
+ConnsAsyncWriting: 0
+ConnsAsyncKeepAlive: 0
+ConnsAsyncClosing: 0
+Scoreboard: _____________________________W______________________________________________________________________............................................................................................................................................................................................................................................................................................................

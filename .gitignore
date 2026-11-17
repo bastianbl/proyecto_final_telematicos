@@ -3,3 +3,9 @@
 # Python
 __pycache__/
 *.pyc
+
+# Logs del balanceador (volumen); solo se versiona la carpeta vacia
+logs/*
+!logs/balanceador/
+logs/balanceador/*
+!logs/balanceador/.gitkeep

@@ -7,8 +7,10 @@ FROM nginx:1.27.3-alpine
 # Valores por defecto: la imagen oficial sustituye ${VAR} en las plantillas
 # de /etc/nginx/templates al arrancar (envsubst). Si no existieran, nginx
 # interpretaria ${BACKEND_COUNT} como variable propia y no arrancaria.
+# PANEL_DEMO=1 solo con interfaz/compose.interfaz.yml (balanceadores demo 3/5/7).
 ENV BACKEND_COUNT=3 \
-    BALANCER_METHOD=byrequests
+    BALANCER_METHOD=byrequests \
+    PANEL_DEMO=0
 
 COPY default.conf.template /etc/nginx/templates/default.conf.template
 COPY html/ /usr/share/nginx/html/

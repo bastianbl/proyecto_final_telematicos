@@ -49,4 +49,4 @@ Para comprobar la configuración sin iniciar contenedores:
 docker compose config --quiet
 ```
 
-Variables configurables en `.env`: `BALANCER_PORT`, `BACKEND_COUNT`, `BALANCER_METHOD`, `WORK_DELAY_MS`, `WORK_CPU_MS`, `WORK_MAX_MS` y `ARTILLERY_IMAGE`. `BACKEND_COUNT` admite 3, 5 o 7; `BALANCER_METHOD`, `byrequests` o `bybusyness`.
+Variables configurables en `.env`: `BALANCER_PORT`, `BACKEND_COUNT`, `BALANCER_METHOD`, `WORK_DELAY_MS`, `WORK_CPU_MS`, `WORK_MAX_MS` y `BACKEND_MODE` (`fijo` o `scale`; lo pone `make scale`). `ARTILLERY_IMAGE` ya no se usa: Artillery tiene su propia imagen con versión fija en `pruebas/Dockerfile`. `BACKEND_COUNT` admite 3, 5 o 7; `BALANCER_METHOD`, `byrequests` o `bybusyness`.
